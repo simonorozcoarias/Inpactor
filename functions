@@ -1,0 +1,1007 @@
+#!/bin/sh
+#########################################################################
+#       @(#) Functions for parallan                                     #
+#                   				                       				#
+#       Simon Orozco Arias                                              #
+#       romain guyot                                                    #
+#########################################################################
+
+fun=$1
+
+if [ $fun == "step1" ];
+then
+	#########################################################################
+	#       @(#) Step 1 - Preprocessing                                     #
+	#                   				                       				#
+	#       Simon Orozco Arias                                              #
+	#       romain guyot                                                    #
+	#########################################################################
+
+	directory=$2
+	DB=$3
+	id_proc=$4
+	result_directory=$5
+
+	DATE=`date '+%d_%m_%Y'`
+	rm -f ${result_directory}/out_file.${id_proc}.tab
+	for f in `cat ${result_directory}/in_file.tmp.${id_proc} | sed  's/\r//g' 2>/dev/null`
+	do
+		NAMESEQ=${f}
+		for i in `echo "${directory}/${NAMESEQ}_rprt.txt" | sed  's/\r//g' 2>/dev/null`
+		do
+			IDENTITYLTR=`grep 'HOMOLOGY' ${i} | sed 's/LTR.* //g' 2>/dev/null | sed 's/%.*//g' 2>/dev/null`
+			PBS=`grep 'PBS' ${i} | sed 's/PBS: //g' 2>/dev/null | sed 's/[^[:alnum:]]//g' 2>/dev/null`
+			PPT=`grep 'POLYPURINE' ${i} | sed 's/POLYPURINE.*: //g' 2>/dev/null | sed 's/[^[:alnum:]]//g' 2>/dev/null`
+			SIZE=`grep 'OVERALL' ${i} | sed 's/ bp.*//g' 2>/dev/null | sed 's/OVER.* //g' 2>/dev/null | sed 's/[^[:alnum:]]//g' 2>/dev/null`
+			ACTIVESITE=`grep 'PUTATIVE ACTIVE' ${i} | sed 's/[^[:alnum:]]//g' 2>/dev/null | sed 's/PUTATIVEACTIVESITES//g' 2>/dev/null | sed 's/NODETECTED/NO/g' 2>/dev/null`
+			LONGESTORF=`grep 'ORF' ${i} | sed 's/LENGTH.* //g' 2>/dev/null | sed 's/[^[:alnum:]]//g' 2>/dev/null`
+			TSD=`grep 'REPEATS:' ${i} | sed 's/.* //g' 2>/dev/null |  sed 's/[^[:alnum:]]/:/g' 2>/dev/null | sed 's/:/-/g' 2>/dev/null | sed 's/://g' 2>/dev/null` 
+			LTRLENGTHA=`grep '5..LTR' ${i} | sed 's/ bp.*//g' 2>/dev/null | sed 's/LENGTH.* //g' 2>/dev/null | sed 's/[^[:alnum:]]//g' 2>/dev/null`
+			LTRLENGTHB=`grep '3..LTR' ${i} | sed 's/ bp.*//g' 2>/dev/null | sed 's/LENGTH.* //g' 2>/dev/null | sed 's/[^[:alnum:]]//g' 2>/dev/null`
+			ORIENTATION=`grep 'ORIENTATION' ${i} `
+			STRAND=`grep 'NEGATIVE' ${i}`
+			if test -z "${STRAND}"
+			then 
+				ST=+; 
+			else 
+				ST=-;
+			fi
+			sed 's/[^[:alnum:]]//g' ${i} 2>/dev/null | sed -n '/^LTRS/,/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/ {/^LTRS/b;/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/b;p}' 2>/dev/null > ${i}.LTR.tmp
+			seqret -sequence ${i}.LTR.tmp -outseq ${i}.LTR.fa.tmp > /dev/null 2>&1
+			extractseq -sequence ${i}.LTR.fa.tmp -region 1-${LTRLENGTHA} -outseq ${i}.LTRA  > /dev/null 2>&1
+			sed -i "s/>.*/>${i}.LTRA/g" ${i}.LTRA 2>/dev/null
+			sed -i 's/_rprt.txt//g' ${i}.LTRA 2>/dev/null
+			LTRA=`grep -v '^>' ${i}.LTRA | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.LTRA//g' 2>/dev/null | sed 's/>*//g' 2>/dev/null`
+			POSITION1LTRB=$(echo "${LTRLENGTHA}+1" | bc)
+			POSITION2LTRB=$(echo "${LTRLENGTHA}+${LTRLENGTHB}" | bc)
+			extractseq -sequence ${i}.LTR.fa.tmp -region ${POSITION1LTRB}-${POSITION2LTRB} -outseq ${i}.LTRB > /dev/null 2>&1
+			sed -i "s/>.*/>${i}.LTRB/g" ${i}.LTRB 2>/dev/null
+			sed -i 's/_rprt.txt//g' ${i}.LTRB 2>/dev/null
+			LTRB=`grep -v '^>' ${i}.LTRB | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.LTRB//g' 2>/dev/null`
+			sed 's/[^[:alnum:]]//g' ${i} 2>/dev/null | sed -n '/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/,/ALIGNEDLTRS/ {/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/b;/ALIGNEDLTRS/b;p}' 2>/dev/null > ${i}.RT.tmp
+			seqret -sequence ${i}.RT.tmp -outseq ${i}.RT.fa > /dev/null 2>&1
+			sed -i 's/>.*/>${i}.RT/g' ${i}.RT.fa 2>/dev/null
+			sed -i 's/_rprt.txt//g' ${i}.RT.fa 2>/dev/null
+
+			RT=`cat ${i}.RT.fa | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null` 		
+			#########################################
+			#	Analyse BLAST			#
+			#########################################
+
+			#CORES GYPSYDB
+			#GAG
+			BLASTRESULT_GAG=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_GAG=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
+			#RT
+			BLASTRESULT_RT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_RT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
+			#INT
+			BLASTRESULT_INT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_INT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
+			#RNaseH
+			BLASTRESULT_RNASE=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_RNASE=`blastall -p blastx -a 4 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
+			#AP
+			BLASTRESULT_AP=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_AP=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
+			#ENV
+			BLASTRESULT_ENV=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_ENV=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
+			#########################
+			#To print information in tabular format
+			#########################
+			echo "${NAMESEQ};${SIZE};%${IDENTITYLTR};${TSD};${PBS};${PPT};${ACTIVESITE};LONGESTORF ${LONGESTORF};LTRA ${LTRLENGTHA};${LTRA};LTRB ${LTRLENGTHB};${LTRB};STRAND ${ST};${RT};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
+		done
+	done
+	exit 0
+fi
+
+if [ $fun == "step1_fasta" ];
+then
+	file=$2
+        DB=$3
+        id_proc=$4
+        result_directory=$5
+
+    rm -f ${result_directory}/out_file.${id_proc}.tab
+
+	for seq in `cat ${result_directory}/in_file.${id_proc}.tmp`
+	do
+	  seqret -sequence ${result_directory}/fastafile_ref.tmp:${seq} -outseq ${result_directory}/${seq}.fa.tmp > /dev/null 2>&1
+	  ltr_finder -w 0 ${result_directory}/${seq}.fa.tmp > ${result_directory}/${seq}.finder.tmp
+	  found=`grep "No LTR Retrotransposons Found" ${result_directory}/${seq}.finder.tmp | wc -l`
+	  if [ $found -ge 1 ]; then
+	    rm -f ${seq}.finder.tmp
+	    rm -f ${seq}.fa.tmp
+	  else
+	    num_eleme=`grep "Location :" ${result_directory}/${seq}.finder.tmp | wc -l`
+	    for ((i=1; i<=$num_eleme; i++))
+	    do
+	        leng=`grep "Location :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/ /|/g' | cut -d "|" -f2 | head -n $i | tail -1`
+	        simi=`grep "Score    :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/\]//g' | head -n $i | tail -1`
+	        simi=`echo "$simi * 100" | bc`
+	        ppt=`awk -F "|@|" -v num="${i}" -v ite=0 '{
+	            if(ban == 1){
+	                print $0; 
+	                ban=0
+	            }
+	            if($0 ~ /Details of PPT/){ 
+	                ite = ite + 1; 
+	                if(ite == num){
+	                    ban=1;
+	                }
+	            }
+	        }' ${result_directory}/${seq}.finder.tmp`
+	        orf=`awk -F "|@|" -v num="${i}" '{
+	            split($0, numero, " ");
+	            if(numero[1] ~ /\-/){
+	                line=1;
+	            }else{
+	                line=0;
+	            }
+	            if(numero[1] == "["num"]"){
+	                ban = 1;
+	            }
+	            if($0 ~ /Domain:/ && ban == 1){
+	                split($0, orf, ":");
+	                split(orf[3], sum, ",");
+	                split(sum[1], simbol, "-")
+	                result=simbol[2]-simbol[1];
+	                print result;
+	            }
+	            if(numero[1] ~ /\[/ && line==0 && numero[1] != "["num"]"){
+	                ban = 0;
+	            }
+	        }' ${result_directory}/${seq}.finder.tmp` 
+	        if [ "null${orf}" == "null" ]; then
+	          orf=0
+	        else
+	          orf=`echo "($orf) + 0" | bc`
+	        fi
+	        LTRAlen=`grep "5'-LTR" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/ //g' | head -n $i | tail -1`
+	        regionLTRA=`grep "5'-LTR" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 2 | sed 's/Len//g' | sed 's/ //g' | head -n $i | tail -1`
+	        extractseq -sequence ${result_directory}/${seq}.fa.tmp -region ${regionLTRA} -outseq ${result_directory}/${seq}.LTRA.fa.tmp > /dev/null 2>&1
+	        LTRA=`grep -v '^>' ${result_directory}/${seq}.LTRA.fa.tmp  | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.LTRA//g' 2>/dev/null | sed 's/>*//g' 2>/dev/null`
+	        LTRBlen=`grep "3'-LTR" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/ //g' | head -n $i | tail -1`
+	        regionLTRB=`grep "3'-LTR" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 2 | sed 's/Len//g' | sed 's/ //g' | head -n $i | tail -1`
+	        extractseq -sequence ${result_directory}/${seq}.fa.tmp -region ${regionLTRB} -outseq ${result_directory}/${seq}.LTRB.fa.tmp > /dev/null 2>&1
+	        LTRB=`grep -v '^>' ${result_directory}/${seq}.LTRB.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.LTRA//g' 2>/dev/null | sed 's/>*//g' 2>/dev/null`
+	        strand=`grep "^Strand" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f1 | head -n $i | tail -1 | sed 's/\+ //g' | sed 's/\- //g' | sed 's/Strand/STRAND/g'`
+	        eleRegion=`grep "Location :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 2 | sed 's/ //g' | head -n $i | tail -1`
+	        extractseq -sequence ${result_directory}/${seq}.fa.tmp -region ${eleRegion} -outseq ${result_directory}/${seq}.${i}.fa.tmp > /dev/null 2>&1
+            sequence=`grep -v ">" ${result_directory}/${seq}.${i}.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null`
+	        #########################################
+	        #       Analyse BLAST                   #
+	        #########################################
+
+	        #CORES GYPSYDB
+	        #GAG
+	        BLASTRESULT_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
+	        #RT
+	        BLASTRESULT_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
+	        #INT
+	        BLASTRESULT_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
+	        #RNaseH
+	        BLASTRESULT_RNASE=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_RNASE=`blastall -p blastx -a 4 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
+	        #AP
+	        BLASTRESULT_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
+	        #ENV
+	        BLASTRESULT_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
+	        echo "${seq}.${i};${leng};%${simi};;;${ppt};;${orf};${LTRAlen};${LTRA};${LTRBlen};${LTRB};${strand};${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
+	    done
+	  fi
+	done
+fi
+
+if [ $fun == "step1_repet" ];
+then
+	file=$2
+    DB=$3
+    id_proc=$4
+    result_directory=$5
+
+    rm -f ${result_directory}/out_file.${id_proc}.tab
+
+	for seq in `cat ${result_directory}/in_file.${id_proc}.tmp`
+	do
+	  seqret -sequence ${result_directory}/fastafile_ref.tmp:${seq} -outseq ${result_directory}/${seq}.fa.tmp > /dev/null 2>&1
+	  SIZE=`infoseq -sequence ${result_directory}/${seq}.fa.tmp -only -length -nohead 2>/dev/null | sed 's/\t//g' | sed 's/ //g'`
+	  demisize=$(echo "scale=0; $SIZE/2 + 1" | bc)
+	  splitter -sequence ${result_directory}/${seq}.fa.tmp -size ${demisize} -outseq ${result_directory}/${seq}.fa.demisize.tmp -osdbname2 ${result_directory}/${seq}.fa.tmp > /dev/null 2>&1
+	  sed 's/:.*//' ${result_directory}/${seq}.fa.demisize.tmp > ${result_directory}/${seq}.demisize_2.tmp 2>/dev/null
+	  cd ${result_directory}
+	  seqretsplit -sequence ${seq}.demisize_2.tmp -osextension2 repet_tmp -auto  > /dev/null 2>&1
+	  name_split=`echo "${result_directory}/${seq}" | sed "s/\//_/g" | tr '[:upper:]' '[:lower:]'`
+	  mv ${name_split}.fa.tmp.repet_tmp ${seq}.repet_tmp
+	  mv ${name_split}.fa.tmp.002.repet_tmp ${seq}.002.repet_tmp
+	  matcher -asequence ${result_directory}/${seq}.repet_tmp -bsequence ${result_directory}/${seq}.002.repet_tmp -auto -outfile ${result_directory}/${seq}.fa.smf -aformat msf  > /dev/null 2>&1
+	  #format EMBOSS
+	  matcher -asequence ${result_directory}/${seq}.repet_tmp -bsequence ${result_directory}/${seq}.002.repet_tmp -auto -outfile ${result_directory}/${seq}.fa.matcher  > /dev/null 2>&1
+	  ID=`grep 'Identity' ${result_directory}/${seq}.fa.matcher | sed 's/#.*(//' | sed 's/)//'`  
+	  identier=`echo $ID | sed 's/\..*//'`	
+	  if [ $identier -lt 70 ];
+	  then
+		LTRASIZE=""
+		LTRASEQ=""
+		LTRBSIZE=""
+		LTRBSEQ=""
+		rm -f ${result_directory}/${seq}.fa.matcher
+	  else
+		#To calculate element's length
+		LENGTH=`grep 'Length' ${result_directory}/${seq}.fa.matcher | sed 's/#.*://'`
+		seqret ${result_directory}/${seq}.fa.smf -outseq ${result_directory}/${seq}.LTR.${identier}.fa.tmp  > /dev/null 2>&1
+		seqretsplit -sequence ${seq}.LTR.${identier}.fa.tmp -osextension2 ltr -auto  > /dev/null 2>&1
+		name_split=`echo "${result_directory}/${seq}" | sed "s/\//_/g" | tr '[:upper:]' '[:lower:]'`
+		mv ${name_split}.fa.tmp.ltr ${seq}.ltr
+		mv ${name_split}.fa.tmp.002.ltr  ${seq}.002.ltr
+		LTRASIZE=`infoseq -sequence ${result_directory}/${seq}.ltr -only -length 2>/dev/null | xargs | sed 's/.* //'`
+		LTRASEQ=`cat ${result_directory}/${seq}.ltr | sed '/>.*/d' | xargs | sed 's/ //g'`
+		LTRBSIZE=`infoseq -sequence ${result_directory}/${seq}.002.ltr -only -length 2>/dev/null | xargs | sed 's/.* //'`
+		LTRBSEQ=`cat ${result_directory}/${seq}.002.ltr | sed '/>.*/d' | xargs | sed 's/ //g'`
+	  	sequence=`grep -v ">" ${result_directory}/${seq}.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null`
+	  fi
+	  cd - > /dev/null
+	  #########################################
+	  #       Analyse BLAST                   #
+	  #########################################
+
+	  #CORES GYPSYDB
+	  #GAG
+	  BLASTRESULT_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
+	  #RT
+	  BLASTRESULT_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
+	  #INT
+	  BLASTRESULT_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
+	  #RNaseH
+	  BLASTRESULT_RNASE=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_RNASE=`blastall -p blastx -a 4 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
+	  #AP
+	  BLASTRESULT_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
+	  #ENV
+	  BLASTRESULT_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
+	  echo "${seq};${SIZE};;;;;;;${LTRASIZE};${LTRASEQ};${LTRBSIZE};${LTRBSEQ};;${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
+ 	done
+fi
+
+if [ $fun == "step2" ];
+then
+	#########################################################################
+	#       @(#) Step2 - Classify LTR-RT elements into families             #
+	#       Simon Orozco Arias                                              #
+	#       romain guyot                                                    #
+	#########################################################################
+	DATE=`date '+%d_%m_%Y'`
+	#
+	directory=$2
+	id_proc=$3
+	result_directory=$4
+	
+	TAB=out_file.${id_proc}.tab
+	rm -f ${result_directory}/${TAB}_ALL.RLC_RLG.TAB
+	rm -f ${result_directory}/${TAB}_ALL.RLC_RLG.FA
+	rm -f ${result_directory}/${TAB}.RLC.TAB
+	rm -f ${result_directory}/${TAB}.RLG.TAB
+	rm -f ${result_directory}/${TAB}.NOC.TAB
+	A=`grep -c '^' ${directory}/${TAB}`
+	sed 's/;/:/g' ${directory}/${TAB} > ${result_directory}/${TAB}.tmp
+	touch ${result_directory}/${TAB}.NOC.TAB
+	touch ${result_directory}/${TAB}.NOC.FA
+	touch ${result_directory}/${TAB}.NAN.TAB.tmp
+	touch ${result_directory}/${TAB}.RXX.TAB
+	touch ${result_directory}/${TAB}.TR_GAG.TAB
+	touch ${result_directory}/${TAB}.RLC.TAB
+	touch ${result_directory}/${TAB}.RLG.TAB
+	###################################
+	#Classification into RLC RLG TR_GAG RXX NOC
+	###################################
+	#RXX if no GAG no RT no INT no RNaseH no AP no ENV domains found by blastx
+	#TR_GAG only if GAG (or GAG + AP) domains was found
+	#RLG if RT or INT or RNaseH RLG was found
+	#RLC if RT or INT or RNaseH RLC was found
+	awk -v tabfile="${result_directory}/${TAB}" -F":" '{
+	  if($15 == "GAG NO" && $17 == "RT NO" && $19 == "INT NO" && $21 == "RNaseH NO" && $23 == "AP NO"){
+	  	class="";
+	  	if($2 < 2000){
+	  		class="-TRIM";
+	  	}else{
+	  		class="-LARD";
+	  	}
+	    print "RXX"class":"$0 >> tabfile".RXX.TAB"
+	  }else{
+	    if(($15 != "GAG NO" && $17 == "RT NO" && $19 == "INT NO" && $21 == "RNaseH NO" && $23 == "AP NO") || ($15 != "GAG NO" && $17 == "RT NO" && $19 == "INT NO" && $21 == "RNaseH NO" && $23 != "AP NO")){
+	      print "TR_GAG:"$0 >> tabfile".TR_GAG.TAB"
+	    }else{
+	      v_cop=0;
+	      v_gyp=0;
+	      v_ndo=0;
+	      if($17 ~ /#RLC/){
+	        v_cop=v_cop+1;
+	        v_ndo=v_ndo+1;
+	      }
+	      if($17 ~ /#RLG/){
+	        v_gyp=v_gyp+1;
+	        v_ndo=v_ndo+1;
+	      }
+	      if($19 ~ /#RLC/){
+	        v_cop=v_cop+1;
+	        v_ndo=v_ndo+1;
+	      }
+	      if($19 ~ /#RLG/){
+	        v_gyp=v_gyp+1;
+	        v_ndo=v_ndo+1;
+	      }
+	      if($21 ~ /#RLC/){
+	        v_cop=v_cop+1;
+	        v_ndo=v_ndo+1;
+	      }
+	      if($21 ~ /#RLG/){
+	        v_gyp=v_gyp+1;
+	        v_ndo=v_ndo+1;
+	      }
+	      if(v_ndo == 0){
+	        print $0 >> tabfile".NOC.TAB"
+	      }else{
+	        if(v_cop == v_gyp){
+	          print $0 >> tabfile".NOC.TAB"
+	        }else{
+	          if(v_cop > v_gyp){
+	            if(v_gyp == 0){
+	              print "RLC:"$0 >> tabfile".RLC.TAB"
+	            }else{
+	              print $0 >> tabfile".NOC.TAB"
+	            }
+	          }else{
+	            if(v_cop == 0){
+	              print "RLG:"$0 >> tabfile".RLG.TAB"
+	            }else{
+	              print $0 >> tabfile".NOC.TAB"
+	            }
+	          }
+	        }
+	      }
+	    }
+	  }
+	}' ${result_directory}/${TAB}.tmp
+	 
+	B=`grep -c '^' ${result_directory}/${TAB}.RXX.TAB`
+	C=`grep -c '^' ${result_directory}/${TAB}.TR_GAG.TAB`
+	D=`grep -c '^' ${result_directory}/${TAB}.RLC.TAB`
+	E=`grep -c '^' ${result_directory}/${TAB}.RLG.TAB`
+	cat ${result_directory}/${TAB}.RLC.TAB ${result_directory}/${TAB}.RLG.TAB >> ${result_directory}/${TAB}_ALL.RLC_RLG.TAB
+
+	rm -f ${result_directory}/${TAB}_ALL.RLC_RLG.FA
+	##########################################
+	#Extraction of FASTA  ${TAB}_RLC_RLG.TAB #
+	##########################################
+	while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
+	    do
+	    ######################
+	    # NAME               #
+	    ######################
+	    NAMESEQ="${rl}-${a}"
+	    ######################
+	    # TSD  / STRAND      #
+	    ######################
+	    if [ "${m}" = "STRAND -" ];
+	    then
+	    REV="-sreverse1"
+	    else
+	    REV="-snucleotide1"
+	    fi
+	    #########
+	    #FASTA  #
+	    #########
+	    echo ">${NAMESEQ}
+	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}_ALL.RLC_RLG.FA
+	    rm -f ${result_directory}/${NAMESEQ}.fas 
+	done < ${result_directory}/${TAB}_ALL.RLC_RLG.TAB
+
+	rm -f ${result_directory}/${TAB}.RXX.FA
+	##########################################
+	#Extraction of FASTA  ${TAB}.RXX.TAB     #
+	##########################################
+	while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
+	    do
+	    ######################
+	    # NAME               #
+	    ######################
+	    NAMESEQ="${rl}-${a}"
+	    ######################
+	    # TSD  / STRAND      #
+	    ######################
+	    if [ "${m}" = "STRAND -" ];
+	    then
+	    REV="-sreverse1"
+	    else
+	    REV="-snucleotide1"
+	    fi
+	    #########
+	    #FASTA  #
+	    #########
+	    echo ">${NAMESEQ}
+	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.RXX.FA
+	    rm -f ${result_directory}/${NAMESEQ}.fas 
+	done < ${result_directory}/${TAB}.RXX.TAB
+
+	rm -f ${result_directory}/${TAB}.TR_GAG.FA
+	##########################################
+	#Extraction of FASTA  ${TAB}.TR_GAG.TAB  #
+	##########################################
+	while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
+	    do
+	    ######################
+	    # NAME               #
+	    ######################
+	    NAMESEQ="${rl}-${a}"
+	    ######################
+	    # TSD  / STRAND      #
+	    ######################
+	    if [ "${m}" = "STRAND -" ];
+	    then
+	    REV="-sreverse1"
+	    else
+	    REV="-snucleotide1"
+	    fi
+	    #########
+	    #FASTA  #
+	    #########
+	    echo ">${NAMESEQ}
+	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.TR_GAG.FA
+	    rm -f ${result_directory}/${NAMESEQ}.fas 
+	done < ${result_directory}/${TAB}.TR_GAG.TAB
+
+	rm -f ${result_directory}/${TAB}.NOC.FA
+	##########################################
+	#Extraction of FASTA  ${TAB}.NOC.TAB     #
+	##########################################
+	while IFS=: read a b c d e f g h i j k l m n o p q r s t u v w x y z
+	    do
+	    ######################
+	    # NAME               #
+	    ######################
+	    NAMESEQ="${a}"
+	    ######################
+	    # TSD  / STRAND      #
+	    ######################
+	    if [ "${m}" = "STRAND -" ];
+	    then
+	    REV="-sreverse1"
+	    else
+	    REV="-snucleotide1"
+	    fi
+	    #########
+	    #FASTA  #
+	    #########
+	    echo ">${NAMESEQ}
+	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.NOC.FA
+	    rm -f ${result_directory}/${NAMESEQ}.fas 
+	done < ${result_directory}/${TAB}.NOC.TAB
+
+	#to find families
+	tab_file=${result_directory}/${TAB}_ALL.RLC_RLG.TAB
+	rm -f ${tab_file}.families
+	awk -F ':' -v tabfile="${tab_file}" '{
+	  split("", domains);
+	  split($16,GAG," ");
+	  if(GAG[2] != "NO"){
+	    split(GAG[2], GAG_subf, "#");
+	    split(GAG_subf[2],GAG_name,"+");
+	    domains[toupper(GAG_name[2])] += 1; 
+	  }
+	  split($18,RTT," ");
+	  if(RTT[2] != "NO"){
+	    split(RTT[2], RT_subf, "#");
+	    split(RT_subf[2],RT_name,"+");
+	    domains[toupper(RT_name[2])] += 1;
+	  }
+	  split($20,INT," ");
+	  if(INT[2] != "NO"){
+	    split(INT[2], INT_subf, "#");
+	    split(INT_subf[2],INT_name,"+");
+	    domains[toupper(INT_name[2])] += 1 
+	  }
+	  split($22,RNAS," ");
+	  if(RNAS[2] != "NO"){
+	    split(RNAS[2], RNAS_subf, "#");
+	    split(RNAS_subf[2],RNAS_name,"+");
+	    domains[toupper(RNAS_name[2])] += 1 
+	  }
+	  split($24,AP," ");
+	  if(AP[2] != "NO"){
+	    split(AP[2], AP_subf, "#");
+	    split(AP_subf[2],AP_name,"+");
+	    domains[toupper(AP_name[2])] += 1 
+	  }
+	  split($26,ENV," ");
+	  if(ENV[2] != "NO"){
+	    split(ENV[2], ENV_subf, "#");
+	    split(ENV_subf[2],ENV_name,"+");
+	    domains[toupper(ENV_name[2])] += 1 
+	  }
+	  len = 0;
+	  max = 0;
+	  no_fam = 0;
+	  for (dom in domains){
+	    if(domains[dom]>=max && domains[dom] > 0){
+	      if(domains[dom] == max){
+	        no_fam = 1;
+	      }
+	      max = domains[dom];
+	      family = dom;
+	    }
+	    len += 1;
+	  }
+	  if(len == 0 || no_fam == 1){
+	    family = "NO_FAMILY"
+	  }
+	  print $1"-"family":"$2":"$3":"$4":"$5":"$6":"$7":"$8":"$9":"$10":"$11":"$12":"$13":"$14":"$15":"$16":"$17":"$18":"$19":"$20":"$21":"$22":"$23":"$24":"$25":"$26":"$27 >> tabfile".families";
+	}' ${tab_file}
+
+	##################################################
+	#Extraction of FASTA  ${TAB}.RLC_RLG.TAB.families#
+	##################################################
+	while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
+	    do
+	    ######################
+	    # NAME               #
+	    ######################
+	    NAMESEQ="${rl}-${a}"
+	    ######################
+	    # TSD  / STRAND      #
+	    ######################
+	    if [ "${m}" = "STRAND -" ];
+	    then
+	    REV="-sreverse1"
+	    else
+	    REV="-snucleotide1"
+	    fi
+	    #########
+	    #FASTA  #
+	    #########
+	    echo ">${NAMESEQ}
+	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}_ALL.RLC_RLG.TAB.families.FA
+	    rm -f ${result_directory}/${NAMESEQ}.fas 
+	done < ${result_directory}/${TAB}_ALL.RLC_RLG.TAB.families
+
+	echo "README
+	line in input: $A
+	line in RXX: $B
+	line in TR_GAG: $C
+	line in RLC: $D
+	line in RLG: $E      
+	#
+	" > ${result_directory}/${TAB}.README
+	exit 0
+fi
+
+if [ $fun == "step3" ];
+then
+	#########################################################################
+	#       @(#) Step 3 - Domain Extraction                                 #
+	#       Simon Orozco Arias                                              #
+	#       romain guyot                                                    #
+	#########################################################################
+	#extract RT domains from fasta sequence of LTR_STRUC elements
+	#domain database
+	DB=$2
+	id_proc=$3
+	result_directory=$4
+	directory=$5
+	RTlen=$6
+	evalue=$7
+
+
+	ROCHE="${directory}/out_file.${id_proc}.tab_ALL.RLC_RLG.FA"
+	BLAST=${result_directory}/ALL_${id_proc}.blx
+
+	rm -f ${ROCHE}
+	rm -f ${BLAST}
+	for i in `cat ${directory}/in_file.${id_proc}.tmp`
+	do
+		seqret -sequence ${directory}/fastafile_ref.tmp:${i} -out ${directory}/${i}.fa.tmp > /dev/null 2>&1
+		cat ${directory}/${i}.fa.tmp >> ${ROCHE}
+	done
+
+	blastx -query ${ROCHE} -db ${DB} -outfmt 6 -evalue ${evalue} -out ${BLAST} -max_hsps 1 -max_target_seqs 1
+
+	#clean blast file for while loop
+	sed -i 's/\t/:/g' ${BLAST}
+
+	#clean blast file for while loop
+	sed -i 's/\t/:/g' ${BLAST}
+
+	#while loop for the blast results
+	rm -f ${result_directory}/Genome.${id_proc}.RT.fa
+	while IFS=: read qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore
+	do
+		#sort sequence
+		seqret -sequence ${ROCHE}:${qseqid} -outseq ${result_directory}/${id_proc}_${qseqid}.tmp > /dev/null 2>&1
+		#extract  domain
+		seqret -sequence ${DB}:${sseqid} -outseq ${result_directory}/${id_proc}_${sseqid}.aa.tmp > /dev/null 2>&1
+		genewise ${result_directory}/${id_proc}_${sseqid}.aa.tmp ${result_directory}/${id_proc}_${qseqid}.tmp -pep -quiet > ${result_directory}/${qseqid}.RT
+		#sort RT size
+		SIZE=`infoseq -sequence ${result_directory}/${qseqid}.RT -only -length -nohead 2>> /dev/null`
+		#filter RT size. For a lot of RT > 200 aa, for less RT > 180 or 150 aa
+		if [ ${SIZE:-0} -gt ${RTlen} ];
+		then
+		    cat ${result_directory}/${qseqid}.RT >> ${result_directory}/Genome.${id_proc}.RT.fa
+		else
+		  	rm -f ${result_directory}/${qseqid}.RT
+		fi
+
+	done < ${BLAST}
+
+	sed -i 's/\///g' ${result_directory}/Genome.${id_proc}.RT.fa
+	exit 0
+fi
+
+if [ $fun == "step4" ];
+then
+	###########################################################################
+	#       @(#) Step 4 -Insertion Tme analysis and Phylogenetic tree creation#
+	#                                                                         #
+	#       Simon Orozco Arias                                                #
+	#       romain guyot                                                      #
+	###########################################################################
+
+	id_proc=$2
+
+	if [ $id_proc -eq 0 ];
+	then
+		result_directory=$3
+		cat ${result_directory}/Final.insertion.*-time.tab.tmp > ${result_directory}/Final.insertion-time.tab.tmp
+		#add header
+		echo "Nom;divergence par site;age in MY" > ${result_directory}/Header.tmp
+		cat ${result_directory}/Header.tmp ${result_directory}/Final.insertion-time.tab.tmp > ${result_directory}/Final.insertion-time.tab
+
+		###############
+		#calculate bins
+		###############
+		cut -d';' -f3 ${result_directory}/Final.insertion-time.tab.tmp | sort > ${result_directory}/time.tmp
+
+		sed -i '/^$/d' ${result_directory}/time.tmp
+		I=1
+		F=500000
+		rm -f ${result_directory}/Distribution-in-age.tab
+		touch ${result_directory}/Distribution-in-age.tab
+		while  [ "${I}" -le 20000000 ];
+		do
+			A=`awk '{if ($1 > '$I' && $1 < '$F') print $0 }' ${result_directory}/time.tmp | wc -l`
+			echo ${I}";"${F}";"${A} >> ${result_directory}/Distribution-in-age.tab
+			I=$(( $I + 500000 ))
+			F=$(( $I + 500000 ))
+		done
+		#####################################
+        genomeFile=$4
+        cores=$5
+        mafft --maxiterate 100 --thread ${cores} ${genomeFile} > ${result_directory}/multiple_align 2>/dev/null
+        mafft --retree 0 --treeout --auto --thread ${cores} ${result_directory}/multiple_align > ${result_directory}/multiple_align2 2>/dev/null
+	else
+        result_directory=$3
+		directory=$4
+	 	input=$5
+     		if [ $input != "repet" ]; then
+		rm -f ${result_directory}/*.fatmp
+		FILE=${directory}/out_file.${id_proc}.tab_ALL.RLC_RLG.TAB
+
+		#Replace / by :
+		sed 's/\t/:/g' ${FILE} > ${FILE}.tmp
+		rm -f ${result_directory}/Final.insertion.${id_proc}-time.tab.tmp
+		touch ${result_directory}/Final.insertion.${id_proc}-time.tab.tmp
+		while IFS=: read clade ltrstrucid taille idLTR tsd arnt ppt activsite orf ltra seqltra ltrb seqltrb strand seqcomplete gag gagev rt rtev int intev rnaseh rnasehev ap apev env envev 
+		do
+			######################
+			# NAME               #
+			######################
+			NAMESEQ="${clade}_${ltrstrucid}"
+			####################################
+			#extraction des sequence LTR       #
+			####################################
+			if [ -z ${seqltra} ]; then
+				echo "${NAMESEQ} does not have LTR A"
+			else 
+				if [ -z ${seqltrb} ]; then
+					echo "${NAMESEQ} does not have LTR B"
+				else
+					echo ">ltra-${NAMESEQ}" > ${result_directory}/${NAMESEQ}.${id_proc}.ltra.fatmp
+					echo "$seqltra" >> ${result_directory}/${NAMESEQ}.${id_proc}.ltra.fatmp
+					echo ">ltrb-${NAMESEQ}" > ${result_directory}/${NAMESEQ}.${id_proc}.ltrb.fatmp
+					echo "$seqltrb" >> ${result_directory}/${NAMESEQ}.${id_proc}.ltrb.fatmp
+					##############################################
+					# to get information from LTR sequence       #
+					##############################################
+					SIZE=`infoseq -sequence "${result_directory}/${NAMESEQ}.${id_proc}.ltra.fatmp" -only -length -nohead 2>/dev/null`
+					#
+					MINSIZE=10
+					if [ "${SIZE}" -gt "${MINSIZE}" ];
+						then
+						###################################################
+						#To calculate divergence between LTR per 100 bases#
+						###################################################
+						stretcher -asequence ${result_directory}/${NAMESEQ}.${id_proc}.ltra.fatmp -bsequence ${result_directory}/${NAMESEQ}.${id_proc}.ltrb.fatmp -outfile ${result_directory}/${NAMESEQ}.${id_proc}.LTR.stretcher -aformat3 msf > /dev/null 2>&1
+						distmat -sequence ${result_directory}/${NAMESEQ}.${id_proc}.LTR.stretcher -nucmethod 2 -outfile ${result_directory}/${NAMESEQ}.${id_proc}.distmat  > /dev/null 2>&1
+						DIS=`tr -s "\t" < ${result_directory}/${NAMESEQ}.${id_proc}.distmat | sed '/^[D,U,G,-].*/d' | awk '{ if ($1=="0.00") print $2 }' | head -n 1 `
+						var=0.00	
+						if [ ${DIS} = -0.00 ]
+						then 	
+							DIS=$var 
+						fi
+						DISPERSITE=`echo "scale=8; ${DIS} / 100" | bc | sed 's/\./0./' `
+						#average substitution rate of 6.5 × 10–9 mutations per synonymous site per year determined for coding regions 				#of adh1 and adh2 genes in grasses or 1.3 x 10-8 for LTR
+						AGE=$(echo "${DISPERSITE} / (0.000000013 * 2)" | bc )
+						echo "${NAMESEQ};${DISPERSITE};${AGE}" >> ${result_directory}/Final.insertion.${id_proc}-time.tab.tmp
+					fi
+				fi
+			fi
+		done < ${FILE}.tmp
+		fi
+	fi
+fi
+
+if [ $fun == "cleaner" ];
+then
+	#########################################################################
+	#       @(#) Cleaner                                                    #
+	#                   				                       				#
+	#       Simon Orozco Arias                                              #
+	#       romain guyot                                                    #
+	#########################################################################
+
+	result_directory=$2
+	DATE=`date '+%d_%m_%Y'`
+	rm -f ${result_directory}/step*/*.tmp
+	rm -f ${result_directory}/step1/in_file.tmp.*
+	rm -f ${result_directory}/step1/out_file.*.tab
+	rm -f ${result_directory}/step1/*.ltr
+	rm -f ${result_directory}/step1/*.repet_tmp
+	rm -f ${result_directory}/step1/*.matcher
+	rm -f ${result_directory}/step1/*.smf
+	rm -f ${result_directory}/step2/out_file.*.tab_ALL.RLC_RLG.*
+	rm -f ${result_directory}/step2/out_file.*.tab.*
+	rm -f ${result_directory}/step3/ALL_*.blx
+	rm -f ${result_directory}/step3/Genome.*.RT.fa
+	rm -f ${result_directory}/step3/*.RT
+	rm -f ${result_directory}/step4/Final.insertion.*.time.tab
+	rm -f ${result_directory}/step4/*.distmat
+	rm -f ${result_directory}/step4/*.stretcher
+	rm -f ${result_directory}/step4/*.fatmp
+	rm -f censor.ncbi.*.log  dbcm1.* mp.* qumx.* dbmx.*
+fi
+
+if [ $fun == "80-80-80-law" ];
+then
+	directory=$2
+	id_proc=$3
+	result_directory=$4
+	TAB=out_file.${id_proc}.tab
+	lines_noc=`cat ${result_directory}/${TAB}.NOC.TAB | wc -l`
+	if [ $lines_noc -gt 0 ];
+	then
+	    #To do alignment between Unclassified and classified LTR-RTs for applying 80-80-80 rule
+	    censor.ncbi "${result_directory}/${TAB}.NOC.FA" -lib ${result_directory}/clasifiedTE.fa -bprg blastn -map "${result_directory}/${TAB}.map" -nofound -nomasked -aln "${result_directory}/${TAB}.aln"
+	    FILE=${result_directory}/${TAB}.map
+	    sed 's/ /:/g' $FILE | sed 's/::/:/g' | sed 's/::/:/g' | sed 's/::/:/g' > $FILE.tab
+	    
+	    rm -f ${result_directory}/${TAB}.TE_passed_808080_law.tmp
+	    touch ${result_directory}/${TAB}.TE_passed_808080_law.tmp
+	    while IFS=: read name_seq fromseq toseq name_ref fromref toref dir sim a b c d
+	    do 
+	      TE_len=`grep "$name_seq:" ${result_directory}/${TAB}.tmp | cut -d ":" -f2 | head -n 1`
+	      if [ -z "$TE_len" ]; then
+	        echo "$name_seq not found!!!"
+	      else
+	        len_alig=$(($toseq - $fromseq))
+	        if [ $TE_len -eq 0 ]; then
+	          TE_len=1
+	        fi
+	        por=$(($len_alig * 100))
+	        por=$(($por / $TE_len))
+	        if [ $por -gt 80 ]; then
+	          if [ $dir == "d" ]; then
+	             simil=`echo "$sim > 0.8" | bc`
+	            if [ $simil -eq 1 ]; then
+	              if [ $len_alig -gt 80 ]; then
+	                echo "$name_seq:$name_ref:$sim" >> ${result_directory}/${TAB}.TE_passed_808080_law.tmp
+	              fi  
+	            fi
+	          fi
+	        fi
+	      fi
+	    done < $FILE.tab
+
+	    res_l80=`cat ${result_directory}/${TAB}.TE_passed_808080_law.tmp | wc -l`
+
+	    if [ $res_l80 -gt 0 ];
+	    then
+	    #########################################################################
+		#       @(#) Reclassification 80-80-80-rule                             #
+		#                   				                       				#
+		#       Simon Orozco Arias                                              #
+		#       romain guyot                                                    #
+		#########################################################################
+
+	      while IFS=: read a b c d e f g h i j k l m n o p q r s t u v w x y z
+	      do
+	        fam=`grep "$a:" ${result_directory}/${TAB}.TE_passed_808080_law.tmp | wc -l`
+	        if [ $fam -ne 0 ]; then
+	          class=`grep "$a:" ${result_directory}/${TAB}.TE_passed_808080_law.tmp | cut -d ":" -f2 | cut -d "-" -f1`
+	          if [ $class == "RLC" ];
+	          then
+	            linea=`grep "$a:" ${result_directory}/${TAB}.tmp`
+	            echo "RLC:$linea" >> ${result_directory}/${TAB}_ALL.RLC_RLG.TAB
+	          else
+	            if [ $class == "RLG" ];
+	            then
+	              linea=`grep "$a:" ${result_directory}/${TAB}.tmp`
+	              echo "RLG:$linea" >> ${result_directory}/${TAB}_ALL.RLC_RLG.TAB
+	            else
+	              linea=`grep "$a:" ${result_directory}/${TAB}.tmp`
+	              echo "$class:$linea" >> ${result_directory}/${TAB}.${class}.TAB
+	            fi
+	          fi
+	        fi
+	      done < ${result_directory}/${TAB}.tmp
+
+	      #creating the new NOC file
+	      
+	      while IFS=: read a b c d e f g h i j k l m n o p q r s t u v w x y z
+	      do
+	        fam=`grep "$a:" ${result_directory}/${TAB}.TE_passed_808080_law.tmp | wc -l`
+	        if [ $fam -eq 0 ]; then
+	          grep "$a:" ${result_directory}/${TAB}.tmp >> ${result_directory}/${TAB}.NOC.TAB_v2
+	        fi
+	      done < ${result_directory}/${TAB}.NOC.TAB
+	      rm -f ${result_directory}/${TAB}.NOC.TAB
+	      mv ${result_directory}/${TAB}.NOC.TAB_v2 ${result_directory}/${TAB}.NOC.TAB
+
+	      rm -f ${result_directory}/${TAB}_ALL.RLC_RLG.FA
+	      ##########################################
+	      #Extraction of FASTA  ${TAB}_RLC_RLG.TAB #
+	      ##########################################
+	      while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
+	          do
+	          ######################
+	          # NAME               #
+	          ######################
+	          NAMESEQ="${rl}-${a}"
+	          ######################
+	          # TSD  / STRAND      #
+	          ######################
+	          if [ "${m}" = "STRAND -" ];
+	          then
+	          	REV="-sreverse1"
+	          else
+	          	REV="-snucleotide1"
+	          fi
+	          #########
+	          #FASTA  #
+	          #########
+	          echo ">${NAMESEQ}
+	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}_ALL.RLC_RLG.FA
+	          rm -f ${result_directory}/${NAMESEQ}.fas 
+	      done < ${result_directory}/${TAB}_ALL.RLC_RLG.TAB
+
+	      rm -f ${result_directory}/${TAB}.RXX.FA
+	      ##########################################
+	      #Extraction of FASTA  ${TAB}.RXX.TAB     #
+	      ##########################################
+	      while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
+	          do
+	          ######################
+	          # NAME               #
+	          ######################
+	          NAMESEQ="${rl}-${a}"
+	          ######################
+	          # TSD  / STRAND      #
+	          ######################
+	          if [ "${m}" = "STRAND -" ];
+	          then
+	          	REV="-sreverse1"
+	          else
+	          	REV="-snucleotide1"
+	          fi
+	          #########
+	          #FASTA  #
+	          #########
+	          echo ">${NAMESEQ}
+	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.RXX.FA
+	          rm -f ${result_directory}/${NAMESEQ}.fas 
+	      done < ${result_directory}/${TAB}.RXX.TAB
+
+	      rm -f ${result_directory}/${TAB}.TR_GAG.FA
+	      ##########################################
+	      #Extraction of FASTA  ${TAB}.TR_GAG.TAB  #
+	      ##########################################
+	      while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
+	          do
+	          ######################
+	          # NAME               #
+	          ######################
+	          NAMESEQ="${rl}-${a}"
+	          ######################
+	          # TSD  / STRAND      #
+	          ######################
+	          if [ "${m}" = "STRAND -" ];
+	          then
+	          REV="-sreverse1"
+	          else
+	          REV="-snucleotide1"
+	          fi
+	          #########
+	          #FASTA  #
+	          #########
+	          echo ">${NAMESEQ}
+	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.TR_GAG.FA
+	          rm -f ${result_directory}/${NAMESEQ}.fas 
+	      done < ${result_directory}/${TAB}.TR_GAG.TAB
+
+	      rm -f ${result_directory}/${TAB}.NOC.FA
+	      ##########################################
+	      #Extraction of FASTA  ${TAB}.NOC.TAB#
+	      ##########################################
+	      while IFS=: read a b c d e f g h i j k l m n o p q r s t u v w x y z
+	          do
+	          ######################
+	          # NAME               #
+	          ######################
+	          NAMESEQ="${a}"
+	          ######################
+	          # TSD  / STRAND      #
+	          ######################
+	          if [ "${m}" = "STRAND -" ];
+	          then
+	          	REV="-sreverse1"
+	          else
+	          	REV="-snucleotide1"
+	          fi
+	          #########
+	          #FASTA  #
+	          #########
+	          echo ">${NAMESEQ}
+	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
+	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.NOC.FA
+	          rm -f ${result_directory}/${NAMESEQ}.fas 
+	      done < ${result_directory}/${TAB}.NOC.TAB
+	    fi
+	fi
+fi
+
+
+

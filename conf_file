@@ -1,0 +1,29 @@
+######################## configuration file ###########################
+directory=/BIOS-Share/home/sorozcoa/Projects/parallel_LTR_STRUC_Analizer/genomes/Arabidopsis_thaliana.TAIR10.fa
+result_directory=/BIOS-Share/home/sorozcoa/Projects/parallel_LTR_STRUC_Analizer/parallan_test_fasta
+verbose=true
+   esto es algo que no debe leer :)
+clean=false
+#this type can be LTR_STRUC, repet or fasta
+input_type=fasta
+############################# Preprocessing ###############################
+preprocessing=true
+database=/BIOS-Share/home/sorozcoa/Projects/coffea_12ccc/DB/cores-database-wickercode.Lineage_Bianca.fa
+############################# Classification ################################
+classification=true
+# this tabfile isn't necessary if preprocessing is true
+tabfile=/BIOS-Share/home/sorozcoa/Projects/parallel_LTR_STRUC_Analizer/parallan_test_fasta/step1/all_tabfiles.tab
+80-80-80-rule=true
+############################# Domain Extraction ##############################
+extraction=true
+RTdatabase=/BIOS-Share/home/sorozcoa/Projects/coffea_12ccc/DB/RTcores-database-wickercode.Lineage_Bianca.fa
+references=/BIOS-Share/home/sorozcoa/Projects/cania/ap85-LTR_STRUC/GaTEs_06-03-2014.fasta
+# this fastafile isn't necessary if classification is true
+fastafile=/BIOS-Share/home/sorozcoa/Projects/parallel_LTR_STRUC_Analizer/parallan_test/step2/all_tabfiles.tab_ALL.RLC_RLG.FA
+#filter RT size. For a lot of RT, is better RTlength > 200, for less RTlength > 180 or 150
+RTlength=200
+Blast_evalue=1e-4
+############ Insertion Time analysis and Phylogenetic tree creation #########
+insertion=true
+# this tabfile isn't necessary if classification is true
+tabfileS4=/BIOS-Share/home/sorozcoa/Projects/parallel_LTR_STRUC_Analizer/parallan_test/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB

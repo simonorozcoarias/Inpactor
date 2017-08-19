@@ -1,0 +1,156 @@
+#!/bin/sh
+#########################################################################
+#       @(#) Splitter for steps                                         #
+#                              				                            #
+#       Simon Orozco Arias                                              #
+#       romain guyot                                                    #
+#########################################################################
+step=$4
+
+if [ $step -eq 1 ];
+then
+  	directory=$1
+	num_proc=$2
+	result_directory=$3
+	count=0
+	num_file=1
+	rm -f ${result_directory}/in_file.tmp.*
+	for i in `ls ${directory}/*_fsta.txt`
+	do
+		NAMESEQ=`grep '>' ${i} | sed 's/>//g' | sed 's/_fsta.txt//g'` 
+		echo ${NAMESEQ} >> ${result_directory}/in_file.tmp.${num_file}
+		num_file=$((${num_file}+1))
+		if [ "${num_file}" -eq "$((${num_proc}+1))" ];
+		then
+			num_file=1;
+		fi
+	done
+fi
+
+if [ $step -eq 5 ];
+then
+  	result_directory=$1
+	fastafile=$2
+	num_proc=$3
+	
+	mkdir -p ${result_directory}
+	sed 's/ /_/g' ${fastafile} > ${result_directory}/fastafile_ref.tmp
+	sed -i 's/:/_/g' ${result_directory}/fastafile_ref.tmp
+	sed -i 's/|/_/g' ${result_directory}/fastafile_ref.tmp
+	num_lines=`grep -c '>' ${result_directory}/fastafile_ref.tmp`
+	num_lines_per_proc=$(((${num_lines}/(${num_proc}))))
+	count=0
+	num_file=1
+
+	echo "there are ${num_lines} sequences."
+	num_lines_per_proc=$(((${num_lines}/(${num_proc}))))
+	echo "each process has to analyze approximately ${num_lines_per_proc} sequences"
+	if [ ${num_lines} -lt $num_proc ]; then
+		echo "WARNING: Less sequences than processors"
+	fi
+
+	rm -f ${result_directory}/in_file.*.tmp
+	for i in `grep '>' ${result_directory}/fastafile_ref.tmp | sed 's/>//g'`
+	do
+		echo ${i} >> ${result_directory}/in_file.${num_file}.tmp
+		num_file=$((${num_file}+1))
+		if [ "${num_file}" -eq "$((${num_proc}+1))" ];
+		then
+			num_file=1;
+		fi
+	done
+fi
+
+if [ $step -eq 2 ];
+then
+	result_directory=$1
+	tabfile=$2
+	num_proc=$3
+	num_lines=`cat ${tabfile} | wc -l`
+
+	echo "there are ${num_lines} sequences."
+	num_lines_per_proc=$(((${num_lines}/(${num_proc}))))
+	echo "each process has to analyze approximately ${num_lines_per_proc} sequences"
+	if [ ${num_lines} -lt $num_proc ]; then
+		echo "WARNING: Less sequences than processors"
+	fi
+
+	mkdir -p ${result_directory}
+	count=0
+	num_file=1
+	j=0
+	rm -f ${result_directory}/out_file.*.tab
+
+	awk -v dir="${result_directory}" -v num_proc="${num_proc}" -v num_file="${num_file}" -v count=0 '{
+		print $0 >> dir"/out_file."num_file".tab";
+		num_file = num_file + 1;
+		if(num_file == (num_proc+1)){
+			num_file = 1;
+		}
+	}' ${tabfile}
+fi
+
+if [ $step -eq 3 ];
+then
+	result_directory=$1
+	fastafile=$2
+	num_proc=$3
+	references=$5
+
+	mkdir -p ${result_directory}
+	cat ${references} ${fastafile} > ${result_directory}/fastafile_ref.tmp
+	sed -i 's/ /_/g' ${result_directory}/fastafile_ref.tmp
+	sed -i 's/:/_/g' ${result_directory}/fastafile_ref.tmp
+	sed -i 's/|/_/g' ${result_directory}/fastafile_ref.tmp
+	num_lines=`grep -c '>' ${result_directory}/fastafile_ref.tmp`
+	num_lines_per_proc=$(((${num_lines}/(${num_proc}))))
+	count=0
+	num_file=1
+
+	echo "there are ${num_lines} sequences."
+	num_lines_per_proc=$(((${num_lines}/(${num_proc}))))
+	echo "each process has to analyze approximately ${num_lines_per_proc} sequences"
+	if [ ${num_lines} -lt $num_proc ]; then
+		echo "WARNING: Less sequences than processors"
+	fi
+
+	rm -f ${result_directory}/in_file.*.tmp
+	for i in `grep '>' ${result_directory}/fastafile_ref.tmp | sed 's/>//g'`
+	do
+		echo ${i} >> ${result_directory}/in_file.${num_file}.tmp
+		num_file=$((${num_file}+1))
+		if [ "${num_file}" -eq "$((${num_proc}+1))" ];
+		then
+			num_file=1;
+		fi
+	done
+fi
+
+if [ $step -eq 4 ];
+then
+	result_directory=$1
+	tabfile=$2
+	num_proc=$3
+	num_lines=`cat ${tabfile} | wc -l`
+	num_lines_per_proc=$(((${num_lines}/(${num_proc}))))
+
+	echo "there are ${num_lines} sequences."
+	num_lines_per_proc=$(((${num_lines}/(${num_proc}))))
+	echo "each process has to analyze approximately ${num_lines_per_proc} sequences"
+	if [ ${num_lines} -lt $num_proc ]; then
+		echo "WARNING: Less sequences than processors"
+	fi
+
+	mkdir -p ${result_directory}
+	count=0
+	num_file=2
+	rm -f ${result_directory}/out_file.*.tab_ALL.RLC_RLG.TAB
+
+	awk -v dir="${result_directory}" -v num_proc="${num_proc}" -v num_file="${num_file}" -v count=0 '{
+		print $0 >> dir"/out_file."num_file".tab_ALL.RLC_RLG.TAB";
+		num_file = num_file + 1;
+		if(num_file == (num_proc+1)){
+			num_file = 1;
+		}
+	}' ${tabfile}
+fi
