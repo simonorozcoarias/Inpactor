@@ -270,7 +270,7 @@ then
 	  #ENV
 	  BLASTRESULT_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
 	  BLASTEVALUE_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
-	  echo "${seq};${SIZE};;;;;;;${LTRASIZE};${LTRASEQ};${LTRBSIZE};${LTRBSEQ};;${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
+	  echo "${seq};${SIZE};${identier};;;;;;${LTRASIZE};${LTRASEQ};${LTRBSIZE};${LTRBSEQ};;${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
  	done
 fi
 
