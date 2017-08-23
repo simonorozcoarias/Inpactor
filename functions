@@ -70,23 +70,23 @@ then
 
 			#CORES GYPSYDB
 			#GAG
-			BLASTRESULT_GAG=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
-			BLASTEVALUE_GAG=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
+			BLASTRESULT_GAG=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_GAG=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
 			#RT
-			BLASTRESULT_RT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
-			BLASTEVALUE_RT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
+			BLASTRESULT_RT=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_RT=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
 			#INT
-			BLASTRESULT_INT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
-			BLASTEVALUE_INT=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
+			BLASTRESULT_INT=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_INT=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
 			#RNaseH
-			BLASTRESULT_RNASE=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
-			BLASTEVALUE_RNASE=`blastall -p blastx -a 4 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
+			BLASTRESULT_RNASE=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_RNASE=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
 			#AP
-			BLASTRESULT_AP=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
-			BLASTEVALUE_AP=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
+			BLASTRESULT_AP=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_AP=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
 			#ENV
-			BLASTRESULT_ENV=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
-			BLASTEVALUE_ENV=`blastall -p blastx -a 12 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
+			BLASTRESULT_ENV=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
+			BLASTEVALUE_ENV=`blastall -p blastx -a 1 -d $DB -i ${i}.RT.fa -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
 			#########################
 			#To print information in tabular format
 			#########################
@@ -166,7 +166,7 @@ then
 	        regionLTRB=`grep "3'-LTR" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 2 | sed 's/Len//g' | sed 's/ //g' | head -n $i | tail -1`
 	        extractseq -sequence ${result_directory}/${seq}.fa.tmp -region ${regionLTRB} -outseq ${result_directory}/${seq}.LTRB.fa.tmp > /dev/null 2>&1
 	        LTRB=`grep -v '^>' ${result_directory}/${seq}.LTRB.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.LTRA//g' 2>/dev/null | sed 's/>*//g' 2>/dev/null`
-	        strand=`grep "^Strand" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f1 | head -n $i | tail -1 | sed 's/\+ //g' | sed 's/\- //g' | sed 's/Strand/STRAND/g'`
+	        strand=`grep "^Strand" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f1 | head -n $i | tail -1 | sed 's/\+ /+/g' | sed 's/\- /-/g' | sed 's/Strand/STRAND/g'`
 	        eleRegion=`grep "Location :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 2 | sed 's/ //g' | head -n $i | tail -1`
 	        extractseq -sequence ${result_directory}/${seq}.fa.tmp -region ${eleRegion} -outseq ${result_directory}/${seq}.${i}.fa.tmp > /dev/null 2>&1
             sequence=`grep -v ">" ${result_directory}/${seq}.${i}.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null`
@@ -176,23 +176,23 @@ then
 
 	        #CORES GYPSYDB
 	        #GAG
-	        BLASTRESULT_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
-	        BLASTEVALUE_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
+	        BLASTRESULT_GAG=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_GAG=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
 	        #RT
-	        BLASTRESULT_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
-	        BLASTEVALUE_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
+	        BLASTRESULT_RT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_RT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
 	        #INT
-	        BLASTRESULT_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
-	        BLASTEVALUE_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
+	        BLASTRESULT_INT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_INT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
 	        #RNaseH
-	        BLASTRESULT_RNASE=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
-	        BLASTEVALUE_RNASE=`blastall -p blastx -a 4 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
+	        BLASTRESULT_RNASE=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_RNASE=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
 	        #AP
-	        BLASTRESULT_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
-	        BLASTEVALUE_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
+	        BLASTRESULT_AP=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_AP=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
 	        #ENV
-	        BLASTRESULT_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
-	        BLASTEVALUE_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
+	        BLASTRESULT_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
+	        BLASTEVALUE_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
 	        echo "${seq}.${i};${leng};%${simi};;;${ppt};;${orf};${LTRAlen};${LTRA};${LTRBlen};${LTRB};${strand};${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
 	    done
 	  fi
@@ -253,23 +253,23 @@ then
 
 	  #CORES GYPSYDB
 	  #GAG
-	  BLASTRESULT_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
-	  BLASTEVALUE_GAG=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
+	  BLASTRESULT_GAG=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_GAG=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'GAG_' | head -n 1 | cut -f 11`
 	  #RT
-	  BLASTRESULT_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
-	  BLASTEVALUE_RT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
+	  BLASTRESULT_RT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_RT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RT_' | head -n 1 | cut -f 11`
 	  #INT
-	  BLASTRESULT_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
-	  BLASTEVALUE_INT=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
+	  BLASTRESULT_INT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_INT=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'INT_' | head -n 1 | cut -f 11`
 	  #RNaseH
-	  BLASTRESULT_RNASE=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
-	  BLASTEVALUE_RNASE=`blastall -p blastx -a 4 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
+	  BLASTRESULT_RNASE=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_RNASE=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'RNaseH_' | head -n 1 | cut -f 11`
 	  #AP
-	  BLASTRESULT_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
-	  BLASTEVALUE_AP=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
+	  BLASTRESULT_AP=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_AP=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'AP_' | head -n 1 | cut -f 11`
 	  #ENV
-	  BLASTRESULT_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
-	  BLASTEVALUE_ENV=`blastall -p blastx -a 12 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
+	  BLASTRESULT_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
+	  BLASTEVALUE_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
 	  echo "${seq};${SIZE};${identier};;;;;;${LTRASIZE};${LTRASEQ};${LTRBSIZE};${LTRBSEQ};;${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
  	done
 fi
