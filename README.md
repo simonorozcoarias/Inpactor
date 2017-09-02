@@ -47,7 +47,7 @@ $ mpicc parallan.c -o parallan
 This step produces an executable, which will be used in next sections. 
 
 Setting up the process of analysis:
-Parallan need a configuration file for define the parameters which will be use in the execution of the analysis. An example of configuration file is given in this repository.
+Parallan need a configuration file where is defined the parameters which will be used in the execution of the analysis. An example of configuration file is given in this repository.
 
 # Executing analysis with Parallan:
 
