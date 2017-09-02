@@ -194,6 +194,7 @@ then
 	        BLASTRESULT_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
 	        BLASTEVALUE_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
 	        echo "${seq}.${i};${leng};%${simi};;;${ppt};;${orf};${LTRAlen};${LTRA};${LTRBlen};${LTRB};${strand};${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
+                rm -f ${seq}*
 	    done
 	  fi
 	done
@@ -775,7 +776,15 @@ then
 
 	result_directory=$2
 	DATE=`date '+%d_%m_%Y'`
-	rm -f ${result_directory}/step*/*.tmp
+	rm -f ${result_directory}/step1/*.finder.tmp
+	rm -f ${result_directory}/step1/*.LTR*.fa.tmp
+	rm -f ${result_directory}/step1/*.tmp
+        cd  ${result_directory}/step1
+        for i in `ls *.tmp`; do rm -f $i; done
+        cd - > /dev/null 2>&1
+	rm -f ${result_directory}/step2/*.tmp
+	rm -f ${result_directory}/step3/*.tmp
+	rm -f ${result_directory}/step4/*.tmp
 	rm -f ${result_directory}/step1/in_file.tmp.*
 	rm -f ${result_directory}/step1/out_file.*.tab
 	rm -f ${result_directory}/step1/*.ltr

@@ -34,7 +34,7 @@ then
 	num_proc=$3
 	
 	mkdir -p ${result_directory}
-	sed 's/ /_/g' ${fastafile} > ${result_directory}/fastafile_ref.tmp
+	sed 's/ /_/g' ${fastafile} | sed 's/\,//g' > ${result_directory}/fastafile_ref.tmp
 	sed -i 's/:/_/g' ${result_directory}/fastafile_ref.tmp
 	sed -i 's/|/_/g' ${result_directory}/fastafile_ref.tmp
 	num_lines=`grep -c '>' ${result_directory}/fastafile_ref.tmp`
