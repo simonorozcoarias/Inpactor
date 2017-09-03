@@ -5,7 +5,7 @@ Parallel Analyzer and Classifier of LTR Retrotransposons for Large Genomes
 
 Parallan was developed using MPI standard, in C language. It is composed by 4 modules.
 
-As previous requirement Parallan needs the output of LTR_STRUC or repet (TEdenovo package)(view software requirement section).
+As previous requirement Parallan needs the output of LTR_STRUC or repet (TEdenovo package), but also Parallan can be used with a fasta file which contained contigs, or the whole genome(view software requirement section).
 
 In a configuration file is possible to define general information such as input information (folder with LTR_STRUC output, repet output file or fasta file), result directory, verbose mode and clean mode at the end of the execution. In addition each module requires that different parameters must be indicated in the configuration file. Preprocessing, Classification and domain extraction modules can run independently, in contrast Tree creation and insertion time Module needs to be executed with Domain extraction module.
 
@@ -51,7 +51,7 @@ Parallan need a configuration file where is defined the parameters which will be
 
 # Executing analysis with Parallan:
 
-This command execute the process of analysis. Is very important to consider that all software listed in the prerequisites section must be load in the path of the system. This step uses Parallan’s executable file generated in installation section.
+This command execute the process of analysis. Is very important to consider that all software listed in the prerequisites section must be load in the path of the system. This step uses Parallan’s executable file generated in installation section. Is highly recommended if you have less sequences or elements in your input than CPUs in your system, to use the same number of processes than sequences or elements in your input, but if you have more sequences or elements than CPUs, is better to use the same number of processes than CPUs in your system.
 
 mpirun -np “number of process (depend of the number of cores available in your system)” parallan “configuration file”
 
@@ -71,6 +71,8 @@ Simón Orozco Arias
 Reinel Tabares Soto
 
 Diego Hernando Ceballos López
+
+Andrea garavito
 
 For more information please write to: tecnologia@bios.co - contacto@bios.co
 
