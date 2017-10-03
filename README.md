@@ -76,3 +76,5 @@ Andrea garavito
 
 For more information please write to: tecnologia@bios.co - contacto@bios.co
 
+# Citation:
+Orozco-Arias, S., Tabares-Soto, R., Ceballos, D., & Guyot, R. (2017, September). Parallel Programming in Biological Sciences, Taking Advantage of Supercomputing in Genomics. In Colombian Conference on Computing (pp. 627-643). Springer, Cham.
