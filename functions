@@ -169,7 +169,7 @@ then
 	        strand=`grep "^Strand" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f1 | head -n $i | tail -1 | sed 's/\+ /+/g' | sed 's/\- /-/g' | sed 's/Strand/STRAND/g'`
 	        eleRegion=`grep "Location :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 2 | sed 's/ //g' | head -n $i | tail -1`
 	        extractseq -sequence ${result_directory}/${seq}.fa.tmp -region ${eleRegion} -outseq ${result_directory}/${seq}.${i}.fa.tmp > /dev/null 2>&1
-            sequence=`grep -v ">" ${result_directory}/${seq}.${i}.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null`
+                sequence=`grep -v ">" ${result_directory}/${seq}.${i}.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null`
 	        #########################################
 	        #       Analyse BLAST                   #
 	        #########################################
@@ -194,8 +194,10 @@ then
 	        BLASTRESULT_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 2`
 	        BLASTEVALUE_ENV=`blastall -p blastx -a 1 -d $DB -i ${result_directory}/${seq}.${i}.fa.tmp -e 1e-4 -m8 | grep 'ENV_' | head -n 1 | cut -f 11`
 	        echo "${seq}.${i};${leng};%${simi};;;${ppt};;${orf};${LTRAlen};${LTRA};${LTRBlen};${LTRB};${strand};${sequence};GAG ${BLASTRESULT_GAG:-NO};E${BLASTEVALUE_GAG:-NO};RT ${BLASTRESULT_RT:-NO};E${BLASTEVALUE_RT:-NO};INT ${BLASTRESULT_INT:-NO};E${BLASTEVALUE_INT:-NO};RNaseH ${BLASTRESULT_RNASE:-NO};E${BLASTEVALUE_RNASE:-NO};AP ${BLASTRESULT_AP:-NO};E${BLASTEVALUE_AP:-NO};ENV ${BLASTRESULT_ENV:-NO};E${BLASTEVALUE_ENV:-NO}" >> ${result_directory}/out_file.${id_proc}.tab
-                rm -f ${seq}*
 	    done
+            rm -f ${result_directory}/${seq}.*
+            rm -f ${result_directory}/${seq}.fa.tmp 
+            rm -f ${result_directory}/${seq}.finder.tmp
 	  fi
 	done
 fi
@@ -245,8 +247,8 @@ then
 		LTRASEQ=`cat ${result_directory}/${seq}.ltr | sed '/>.*/d' | xargs | sed 's/ //g'`
 		LTRBSIZE=`infoseq -sequence ${result_directory}/${seq}.002.ltr -only -length 2>/dev/null | xargs | sed 's/.* //'`
 		LTRBSEQ=`cat ${result_directory}/${seq}.002.ltr | sed '/>.*/d' | xargs | sed 's/ //g'`
-	  	sequence=`grep -v ">" ${result_directory}/${seq}.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null`
 	  fi
+	  sequence=`grep -v ">" ${result_directory}/${seq}.fa.tmp | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.RT//g' 2>/dev/null`
 	  cd - > /dev/null
 	  #########################################
 	  #       Analyse BLAST                   #
@@ -779,9 +781,6 @@ then
 	rm -f ${result_directory}/step1/*.finder.tmp
 	rm -f ${result_directory}/step1/*.LTR*.fa.tmp
 	rm -f ${result_directory}/step1/*.tmp
-        cd  ${result_directory}/step1
-        for i in `ls *.tmp`; do rm -f $i; done
-        cd - > /dev/null 2>&1
 	rm -f ${result_directory}/step2/*.tmp
 	rm -f ${result_directory}/step3/*.tmp
 	rm -f ${result_directory}/step4/*.tmp
@@ -813,7 +812,7 @@ then
 	if [ $lines_noc -gt 0 ];
 	then
 	    #To do alignment between Unclassified and classified LTR-RTs for applying 80-80-80 rule
-	    censor.ncbi "${result_directory}/${TAB}.NOC.FA" -lib ${result_directory}/clasifiedTE.fa -bprg blastn -map "${result_directory}/${TAB}.map" -nofound -nomasked -aln "${result_directory}/${TAB}.aln"
+	    censor.ncbi ${result_directory}/clasifiedTE.fa -lib "${result_directory}/${TAB}.NOC.FA" -bprg blastn -map "${result_directory}/${TAB}.map" -nofound -nomasked -aln "${result_directory}/${TAB}.aln" -bprm '-a 1' > /dev/null 2>&1
 	    FILE=${result_directory}/${TAB}.map
 	    sed 's/ /:/g' $FILE | sed 's/::/:/g' | sed 's/::/:/g' | sed 's/::/:/g' > $FILE.tab
 	    
@@ -821,9 +820,9 @@ then
 	    touch ${result_directory}/${TAB}.TE_passed_808080_law.tmp
 	    while IFS=: read name_seq fromseq toseq name_ref fromref toref dir sim a b c d
 	    do 
-	      TE_len=`grep "$name_seq:" ${result_directory}/${TAB}.tmp | cut -d ":" -f2 | head -n 1`
+	      TE_len=`grep "$name_ref:" ${result_directory}/${TAB}.tmp | cut -d ":" -f2 | head -n 1`
 	      if [ -z "$TE_len" ]; then
-	        echo "$name_seq not found!!!"
+	        echo "$name_ref not found!!!"
 	      else
 	        len_alig=$(($toseq - $fromseq))
 	        if [ $TE_len -eq 0 ]; then
@@ -836,7 +835,7 @@ then
 	             simil=`echo "$sim > 0.8" | bc`
 	            if [ $simil -eq 1 ]; then
 	              if [ $len_alig -gt 80 ]; then
-	                echo "$name_seq:$name_ref:$sim" >> ${result_directory}/${TAB}.TE_passed_808080_law.tmp
+	                echo "$name_ref:$name_seq:$sim" >> ${result_directory}/${TAB}.TE_passed_808080_law.tmp
 	              fi  
 	            fi
 	          fi
@@ -849,17 +848,17 @@ then
 	    if [ $res_l80 -gt 0 ];
 	    then
 	    #########################################################################
-		#       @(#) Reclassification 80-80-80-rule                             #
-		#                   				                       				#
-		#       Simon Orozco Arias                                              #
-		#       romain guyot                                                    #
-		#########################################################################
+	    #       @(#) Reclassification 80-80-80-rule                             #
+	    #                   				                    #
+	    #       Simon Orozco Arias                                              #
+	    #       romain guyot                                                    #
+	    #########################################################################
 
 	      while IFS=: read a b c d e f g h i j k l m n o p q r s t u v w x y z
 	      do
 	        fam=`grep "$a:" ${result_directory}/${TAB}.TE_passed_808080_law.tmp | wc -l`
 	        if [ $fam -ne 0 ]; then
-	          class=`grep "$a:" ${result_directory}/${TAB}.TE_passed_808080_law.tmp | cut -d ":" -f2 | cut -d "-" -f1`
+	          class=`grep "$a:" ${result_directory}/${TAB}.TE_passed_808080_law.tmp | head -n 1 | cut -d ":" -f2 | cut -d "-" -f1`
 	          if [ $class == "RLC" ];
 	          then
 	            linea=`grep "$a:" ${result_directory}/${TAB}.tmp`
@@ -871,7 +870,7 @@ then
 	              echo "RLG:$linea" >> ${result_directory}/${TAB}_ALL.RLC_RLG.TAB
 	            else
 	              linea=`grep "$a:" ${result_directory}/${TAB}.tmp`
-	              echo "$class:$linea" >> ${result_directory}/${TAB}.${class}.TAB
+	              echo "${class}:${linea}" >> ${result_directory}/${TAB}.${class}.TAB
 	            fi
 	          fi
 	        fi
