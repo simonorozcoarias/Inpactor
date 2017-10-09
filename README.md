@@ -67,6 +67,7 @@ Romain Guyot
 Autonomous University of Manizales (https://www.autonoma.edu.co/)
 
 Simón Orozco Arias
+
 Reinel Tabares Soto
 
 Bioinformatics and computational biology center of Colombia: (www.bios.co) 
