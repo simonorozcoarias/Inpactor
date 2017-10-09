@@ -10,7 +10,7 @@ As previous requirement Inpactor needs the output of LTR_STRUC or repet (TEdenov
 In a configuration file is possible to define general information such as input information (folder with LTR_STRUC output, repet output file or fasta file), result directory, verbose mode and clean mode at the end of the execution. In addition each module requires that different parameters must be indicated in the configuration file. Preprocessing, Classification and domain extraction modules can run independently, in contrast Tree creation and insertion time Module needs to be executed with Domain extraction module.
 
 The first module executed in the process is the preprocessing. The objective here is to group together all information from the input information into one tabular text file, to organize the information. Input files can be:
-1) LTR_STRUC output: Inpactor uses two LTR_STRUC files: (i) in report file we got features such as LTR Identity, primer binding site (PBS), PolyPurine Tract (PPT), length, Active size, Longest Open Reading Frame (ORF), Target Site Duplication (TSD), Long Terminal Repeat (LTR) A length, LTR B length, and strand; (ii) Parallan uses Fasta file to extract important sequences like LTR A and B using Seqret and Extractseq tools from Emboss and the sequence of the full element.
+1) LTR_STRUC output: Inpactor uses two LTR_STRUC files: (i) in report file we got features such as LTR Identity, primer binding site (PBS), PolyPurine Tract (PPT), length, Active size, Longest Open Reading Frame (ORF), Target Site Duplication (TSD), Long Terminal Repeat (LTR) A length, LTR B length, and strand; (ii) Inpactor uses Fasta file to extract important sequences like LTR A and B using Seqret and Extractseq tools from Emboss and the sequence of the full element.
 2) repet otput (TEdenovo Package) in fasta format: Inpactor extracts information such as element length, LTR Identity, Long Terminal Repeat (LTR) A length, LTR A sequence, LTR B length, LTR B sequence and information about domains found. 
 3) fasta file: Inpactor can analyze fasta files with contigs and also with whole genome. In this case Inpactor executes LTR-FINDER to find completed elements inside the input file, looking for features such as element length, LTR Identity, PPT, Longest ORF, Long Terminal Repeat (LTR) A length, LTR A sequence, LTR B length, LTR B sequence, Strand and information about domains found.
 
@@ -36,13 +36,13 @@ Inpactor run over linux environments, the software was tested in Centos 6,7.  Fo
 - LTR-FINDER version 1.0.5 (http://mafft.cbrc.jp/alignment/software/)
 
 # Installation:
-After install all prerequistes, you must clone the repository of the current version of Parallan using: 
+After install all prerequistes, you must clone the repository of the current version of Inpactor using: 
 
 $ git clone https://github.com/simonorozcoarias/Inpactor.git, then you might run as following:
 
 $ cd Inpactor
 
-$ mpicc parallan.c -o Inpactor
+$ mpicc Inpactor.c -o Inpactor
 
 This step produces an executable, which will be used in next sections. 
 
