@@ -866,12 +866,12 @@ void cleaner(char result_directory[], int verbose){
 }
 
 void printHelp(){
-	printf("Usage: mpirun -np num_processes parallan configuration_file\n");
+	printf("Usage: mpirun -np num_processes Inpactor configuration_file\n");
 	printf("NOTE: Parameter num_processes has to be greater than 1\n");
 	printf("Example of configuration file:\n");
 	printf("######################### Configuration file #####################\n");
 	printf("directory=/home/user/LTR_STRUC_output_folder\n");
-	printf("result_directory=/home/user/Parallan_output\n");
+	printf("result_directory=/home/user/Inpactor_output\n");
 	printf("verbose=true\n");
 	printf("clean=true\n");
         printf("#Input type can be LTR_STRUC, repet or fasta\n");
@@ -882,14 +882,14 @@ void printHelp(){
 	printf("######################### Classification ########################\n");
 	printf("classification=true\n");
 	printf("#this tabfile isn't necessary if preprocessing is true\n");
-	printf("tabfile=/home/user/Parallan_output/step1/all_tabfiles.tab\n");
+	printf("tabfile=/home/user/Inpactor_output/step1/all_tabfiles.tab\n");
 	printf("80-80-80-rule=false\n");
 	printf("####################### Domain Extraction ######################\n");
 	printf("extraction=true\n");
 	printf("RTdatabase=/home/user/RTcores-database-wickercode.Lineage_Bianca.fa\n");
 	printf("references=/home/user/references.fasta\n");
 	printf("#this fastafile isn't necessary if classification is true\n");
-	printf("fastafile=/home/user/Parallan_output/step2/all_tabfiles.tab_ALL.RLC_RLG.FA\n");
+	printf("fastafile=/home/user/Inpactor_output/step2/all_tabfiles.tab_ALL.RLC_RLG.FA\n");
 	printf("#filter RT size. For a lot of RT, is better RTlength > 200, \n");
 	printf("#for less RTlength > 180 or 150\n");
 	printf("RTlength=200\n");
@@ -897,7 +897,7 @@ void printHelp(){
 	printf("###### Insertion Time analysis and Phylogenetic tree creation ########\n");
 	printf("insertion=true\n");
 	printf("#this tabfile isn't necessary if classification is true\n");
-	printf("tabfileS4=/home/user/Parallan_output/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB\n");
+	printf("tabfileS4=/home/user/Inpactor_output/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB\n");
 }
 
 int main (int argc, char *argv[]){
