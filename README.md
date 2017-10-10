@@ -33,7 +33,7 @@ Inpactor run over linux environments, the software was tested in Centos 6,7.  Fo
 - OpenMPI version 1.8.8 (https://www.open-mpi.org/software/ompi/v1.8/)
 - Censor version 4.2.29 (http://www.girinst.org/downloads/software/censor/)
 - Mafft version 7.305 (http://mafft.cbrc.jp/alignment/software/)
-- LTR-FINDER version 1.0.5 (http://mafft.cbrc.jp/alignment/software/)
+- LTR-FINDER version 1.0.5 (http://tlife.fudan.edu.cn/ltr_finder/)
 
 # Installation:
 After install all prerequistes, you must clone the repository of the current version of Inpactor using: 
