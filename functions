@@ -1,7 +1,7 @@
 #!/bin/sh
 #########################################################################
-#       @(#) Functions for Inpactor                                     #
-#                   				                   	#
+#       @(#) Functions for parallan                                     #
+#                   				                       				#
 #       Simon Orozco Arias                                              #
 #       romain guyot                                                    #
 #########################################################################
@@ -47,7 +47,7 @@ then
 				ST=-;
 			fi
 			sed 's/[^[:alnum:]]//g' ${i} 2>/dev/null | sed -n '/^LTRS/,/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/ {/^LTRS/b;/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/b;p}' 2>/dev/null > ${i}.LTR.tmp
-			seqret -sequence ${i}.LTR.tmp -outseq ${i}.LTR.fa.tmp > /dev/null 2>&1
+			seqret -sequence ${i}.LTR.tmp -outseq ${i}.LTR.fa.tmp 2>&1 | grep -v "Read and write (return) sequences"
 			extractseq -sequence ${i}.LTR.fa.tmp -region 1-${LTRLENGTHA} -outseq ${i}.LTRA  > /dev/null 2>&1
 			sed -i "s/>.*/>${i}.LTRA/g" ${i}.LTRA 2>/dev/null
 			sed -i 's/_rprt.txt//g' ${i}.LTRA 2>/dev/null
@@ -59,7 +59,7 @@ then
 			sed -i 's/_rprt.txt//g' ${i}.LTRB 2>/dev/null
 			LTRB=`grep -v '^>' ${i}.LTRB | xargs | sed 's/ //g' 2>/dev/null | sed 's/.*.LTRB//g' 2>/dev/null`
 			sed 's/[^[:alnum:]]//g' ${i} 2>/dev/null | sed -n '/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/,/ALIGNEDLTRS/ {/COMPLETESEQUENCEOFPUTATIVETRANSPOSON/b;/ALIGNEDLTRS/b;p}' 2>/dev/null > ${i}.RT.tmp
-			seqret -sequence ${i}.RT.tmp -outseq ${i}.RT.fa > /dev/null 2>&1
+			seqret -sequence ${i}.RT.tmp -outseq ${i}.RT.fa 2>&1 | grep -v "Read and write (return) sequences"
 			sed -i 's/>.*/>${i}.RT/g' ${i}.RT.fa 2>/dev/null
 			sed -i 's/_rprt.txt//g' ${i}.RT.fa 2>/dev/null
 
@@ -107,7 +107,7 @@ then
 
 	for seq in `cat ${result_directory}/in_file.${id_proc}.tmp`
 	do
-	  seqret -sequence ${result_directory}/fastafile_ref.tmp:${seq} -outseq ${result_directory}/${seq}.fa.tmp > /dev/null 2>&1
+	  seqret -sequence ${result_directory}/fastafile_ref.tmp:${seq} -outseq ${result_directory}/${seq}.fa.tmp 2>&1 | grep -v "Read and write (return) sequences"
 	  ltr_finder -w 0 ${result_directory}/${seq}.fa.tmp > ${result_directory}/${seq}.finder.tmp
 	  found=`grep "No LTR Retrotransposons Found" ${result_directory}/${seq}.finder.tmp | wc -l`
 	  if [ $found -ge 1 ]; then
@@ -213,7 +213,7 @@ then
 
 	for seq in `cat ${result_directory}/in_file.${id_proc}.tmp`
 	do
-	  seqret -sequence ${result_directory}/fastafile_ref.tmp:${seq} -outseq ${result_directory}/${seq}.fa.tmp > /dev/null 2>&1
+	  seqret -sequence ${result_directory}/fastafile_ref.tmp:${seq} -outseq ${result_directory}/${seq}.fa.tmp 2>&1 | grep -v "Read and write (return) sequences"
 	  SIZE=`infoseq -sequence ${result_directory}/${seq}.fa.tmp -only -length -nohead 2>/dev/null | sed 's/\t//g' | sed 's/ //g'`
 	  demisize=$(echo "scale=0; $SIZE/2 + 1" | bc)
 	  splitter -sequence ${result_directory}/${seq}.fa.tmp -size ${demisize} -outseq ${result_directory}/${seq}.fa.demisize.tmp -osdbname2 ${result_directory}/${seq}.fa.tmp > /dev/null 2>&1
@@ -238,7 +238,7 @@ then
 	  else
 		#To calculate element's length
 		LENGTH=`grep 'Length' ${result_directory}/${seq}.fa.matcher | sed 's/#.*://'`
-		seqret ${result_directory}/${seq}.fa.smf -outseq ${result_directory}/${seq}.LTR.${identier}.fa.tmp  > /dev/null 2>&1
+		seqret ${result_directory}/${seq}.fa.smf -outseq ${result_directory}/${seq}.LTR.${identier}.fa.tmp 2>&1  | grep -v "Read and write (return) sequences"
 		seqretsplit -sequence ${seq}.LTR.${identier}.fa.tmp -osextension2 ltr -auto  > /dev/null 2>&1
 		name_split=`echo "${result_directory}/${seq}" | sed "s/\//_/g" | tr '[:upper:]' '[:lower:]'`
 		mv ${name_split}.fa.tmp.ltr ${seq}.ltr
@@ -407,7 +407,7 @@ then
 	    #########
 	    echo ">${NAMESEQ}
 	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}_ALL.RLC_RLG.FA
 	    rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -437,7 +437,7 @@ then
 	    #########
 	    echo ">${NAMESEQ}
 	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.RXX.FA
 	    rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -467,7 +467,7 @@ then
 	    #########
 	    echo ">${NAMESEQ}
 	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.TR_GAG.FA
 	    rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -497,7 +497,7 @@ then
 	    #########
 	    echo ">${NAMESEQ}
 	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.NOC.FA
 	    rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -586,7 +586,7 @@ then
 	    #########
 	    echo ">${NAMESEQ}
 	${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	    seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	    rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	    cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}_ALL.RLC_RLG.TAB.families.FA
 	    rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -627,7 +627,7 @@ then
 	rm -f ${BLAST}
 	for i in `cat ${directory}/in_file.${id_proc}.tmp`
 	do
-		seqret -sequence ${directory}/fastafile_ref.tmp:${i} -out ${directory}/${i}.fa.tmp > /dev/null 2>&1
+		seqret -sequence ${directory}/fastafile_ref.tmp:${i} -out ${directory}/${i}.fa.tmp 2>&1 | grep -v "Read and write (return) sequences"
 		cat ${directory}/${i}.fa.tmp >> ${ROCHE}
 	done
 
@@ -644,9 +644,9 @@ then
 	while IFS=: read qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore
 	do
 		#sort sequence
-		seqret -sequence ${ROCHE}:${qseqid} -outseq ${result_directory}/${id_proc}_${qseqid}.tmp > /dev/null 2>&1
+		seqret -sequence ${ROCHE}:${qseqid} -outseq ${result_directory}/${id_proc}_${qseqid}.tmp 2>&1 | grep -v "Read and write (return) sequences"
 		#extract  domain
-		seqret -sequence ${DB}:${sseqid} -outseq ${result_directory}/${id_proc}_${sseqid}.aa.tmp > /dev/null 2>&1
+		seqret -sequence ${DB}:${sseqid} -outseq ${result_directory}/${id_proc}_${sseqid}.aa.tmp 2>&1 | grep -v "Read and write (return) sequences"
 		genewise ${result_directory}/${id_proc}_${sseqid}.aa.tmp ${result_directory}/${id_proc}_${qseqid}.tmp -pep -quiet > ${result_directory}/${qseqid}.RT
 		#sort RT size
 		SIZE=`infoseq -sequence ${result_directory}/${qseqid}.RT -only -length -nohead 2>> /dev/null`
@@ -809,7 +809,8 @@ then
 	result_directory=$4
 	TAB=out_file.${id_proc}.tab
 	lines_noc=`cat ${result_directory}/${TAB}.NOC.TAB | wc -l`
-	if [ $lines_noc -gt 0 ];
+	#if [ $lines_noc -gt 0 ];
+         if [ -z ${result_directory}/${TAB}.NOC.TAB ];
 	then
 	    #To do alignment between Unclassified and classified LTR-RTs for applying 80-80-80 rule
 	    censor.ncbi ${result_directory}/clasifiedTE.fa -lib "${result_directory}/${TAB}.NOC.FA" -bprg blastn -map "${result_directory}/${TAB}.map" -nofound -nomasked -aln "${result_directory}/${TAB}.aln" -bprm '-a 1' > /dev/null 2>&1
@@ -912,7 +913,7 @@ then
 	          #########
 	          echo ">${NAMESEQ}
 	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}_ALL.RLC_RLG.FA
 	          rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -942,7 +943,7 @@ then
 	          #########
 	          echo ">${NAMESEQ}
 	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.RXX.FA
 	          rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -972,7 +973,7 @@ then
 	          #########
 	          echo ">${NAMESEQ}
 	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.TR_GAG.FA
 	          rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -1002,7 +1003,7 @@ then
 	          #########
 	          echo ">${NAMESEQ}
 	      ${n}" > ${result_directory}/${NAMESEQ}.fa.tmp
-	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas > /dev/null 2>&1
+	          seqret -sequence ${result_directory}/${NAMESEQ}.fa.tmp ${REV} -outseq ${result_directory}/${NAMESEQ}.fas 2>&1 | grep -v "Read and write (return) sequences"
 	          rm -f ${result_directory}/${NAMESEQ}.fa.tmp
 	          cat ${result_directory}/${NAMESEQ}.fas >> ${result_directory}/${TAB}.NOC.FA
 	          rm -f ${result_directory}/${NAMESEQ}.fas 
@@ -1010,6 +1011,3 @@ then
 	    fi
 	fi
 fi
-
-
-
