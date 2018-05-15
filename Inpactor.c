@@ -490,7 +490,7 @@ void step2(char dir[], int num_proc, int vstep1, int my_id, char tabfile[], char
 		    char *cur2 = commandJoin;
 		    char * const end3 = commandJoin + sizeof commandJoin;
 		    cur2 += snprintf(cur2, end3-cur2, "%s ","cat ");
-		    cur2 += snprintf(cur2, end3-cur2, "%s/step2/out_file.*.tab_ALL.RLC_RLG.TAB > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.FA; cat %s/step2/out_file.*.tab.RXX.TAB > %s/step2/all_tabfiles.tab_ALL.RXX.TAB; cat %s/step2/out_file.*.tab.RXX.FA > %s/step2/all_tabfiles.tab_ALL.RXX.FA; cat %s/step2/out_file.*.tab.TR_GAG.TAB > %s/step2/all_tabfiles.tab_ALL.TR_GAG.TAB; cat %s/step2/out_file.*.tab.TR_GAG.FA > %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA; cat %s/step2/out_file.*.tab.NOC.TAB > %s/step2/all_tabfiles.tab.NOC.TAB; cat %s/step2/out_file.*.tab.NOC.FA > %s/step2/all_tabfiles.tab.NOC.FA; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA; cat %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA %s/step2/all_tabfiles.tab_ALL.RXX.FA %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA > %s/step2/clasifiedTE.fa;",result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory);
+		    cur2 += snprintf(cur2, end3-cur2, "%s/step2/out_file.*.tab_ALL.RLC_RLG.TAB > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.FA; cat %s/step2/out_file.*.tab.RXX.TAB > %s/step2/all_tabfiles.tab_ALL.RXX.TAB; cat %s/step2/out_file.*.tab.RXX.FA > %s/step2/all_tabfiles.tab_ALL.RXX.FA; cat %s/step2/out_file.*.tab.TR_GAG.TAB > %s/step2/all_tabfiles.tab_ALL.TR_GAG.TAB; cat %s/step2/out_file.*.tab.TR_GAG.FA > %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA; cat %s/step2/out_file.*.tab.NOC.TAB > %s/step2/all_tabfiles.tab.NOC.TAB; cat %s/step2/out_file.*.tab.NOC.FA > %s/step2/all_tabfiles.tab.NOC.FA; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA; cat %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA %s/step2/all_tabfiles.tab_ALL.RXX.FA %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA > %s/step2/classifiedTE.fa;",result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory);
 		    if(verbose == 1){
 		    	printf("executing command: %s\n",commandJoin);
 		    }
@@ -523,7 +523,7 @@ void step2(char dir[], int num_proc, int vstep1, int my_id, char tabfile[], char
 			    char *cur22 = commandJoin2;
 			    char * const end32 = commandJoin2 + sizeof commandJoin2;
 			    cur22 += snprintf(cur22, end32-cur22, "%s ","cat ");
-			    cur22 += snprintf(cur22, end32-cur22, "%s/step2/out_file.*.tab_ALL.RLC_RLG.TAB > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.FA; cat %s/step2/out_file.*.tab.RXX.TAB > %s/step2/all_tabfiles.tab_ALL.RXX.TAB; cat %s/step2/out_file.*.tab.RXX.FA > %s/step2/all_tabfiles.tab_ALL.RXX.FA; cat %s/step2/out_file.*.tab.TR_GAG.TAB > %s/step2/all_tabfiles.tab_ALL.TR_GAG.TAB; cat %s/step2/out_file.*.tab.TR_GAG.FA > %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA; cat %s/step2/out_file.*.tab.NOC.TAB > %s/step2/all_tabfiles.tab.NOC.TAB; cat %s/step2/out_file.*.tab.NOC.FA > %s/step2/all_tabfiles.tab.NOC.FA; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA; cat %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA %s/step2/all_tabfiles.tab_ALL.RXX.FA %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA > %s/step2/clasifiedTE.fa;",result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory);
+			    cur22 += snprintf(cur22, end32-cur22, "%s/step2/out_file.*.tab_ALL.RLC_RLG.TAB > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.FA; cat %s/step2/out_file.*.tab.RXX.TAB > %s/step2/all_tabfiles.tab_ALL.RXX.TAB; cat %s/step2/out_file.*.tab.RXX.FA > %s/step2/all_tabfiles.tab_ALL.RXX.FA; cat %s/step2/out_file.*.tab.TR_GAG.TAB > %s/step2/all_tabfiles.tab_ALL.TR_GAG.TAB; cat %s/step2/out_file.*.tab.TR_GAG.FA > %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA; cat %s/step2/out_file.*.tab.NOC.TAB > %s/step2/all_tabfiles.tab.NOC.TAB; cat %s/step2/out_file.*.tab.NOC.FA > %s/step2/all_tabfiles.tab.NOC.FA; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families; cat %s/step2/out_file.*.tab_ALL.RLC_RLG.TAB.families.FA > %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA; cat %s/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB.families.FA %s/step2/all_tabfiles.tab_ALL.RXX.FA %s/step2/all_tabfiles.tab_ALL.TR_GAG.FA > %s/step2/classifiedTE.fa;",result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory,result_directory);
 			    if(verbose == 1){
 		    	printf("executing command: %s\n",commandJoin2);
 			    }
@@ -709,7 +709,7 @@ void step3(char db[], char dir[], int num_proc, int vstep2, int my_id, char fast
 	}
 }
 
-void step4(char tabfile[], int vstep2, int vstep3, int my_id, char dir[],char result_directory[], int num_proc, int verbose, char input[]){
+void step4(char tabfile[], int vstep2, int vstep3, int my_id, char dir[],char result_directory[], int num_proc, int verbose, char input[], char substitution_rate[]){
 	int start=0;
 	int i;
 	char buf[BUFSIZE];
@@ -821,7 +821,7 @@ void step4(char tabfile[], int vstep2, int vstep3, int my_id, char dir[],char re
 		char *cur2 = commandStep4;
 		char * const end = commandStep4 + sizeof commandStep4;
 		cur2 += snprintf(cur2, end-cur2, "%s ","sh functions ");
-		cur2 += snprintf(cur2, end-cur2, "step4 %d %s/step4 %s/step2 %s",my_id,result_directory,result_directory,input);
+		cur2 += snprintf(cur2, end-cur2, "step4 %d %s/step4 %s/step2 %s %s",my_id,result_directory,result_directory,input,substitution_rate);
 		if(verbose == 1){
 		  printf("executing command: %s\n",commandStep4);
 		}
@@ -870,12 +870,12 @@ void printHelp(){
 	printf("NOTE: Parameter num_processes has to be greater than 1\n");
 	printf("Example of configuration file:\n");
 	printf("######################### Configuration file #####################\n");
-	printf("directory=/home/user/LTR_STRUC_output_folder\n");
+	printf("input=/home/user/input_data\n");
 	printf("result_directory=/home/user/Inpactor_output\n");
 	printf("verbose=true\n");
 	printf("clean=true\n");
-        printf("#Input type can be LTR_STRUC, repet or fasta\n");
-        printf("input_type=LTR_STRUC\n");
+    printf("#Input type can be LTR_STRUC, repet or fasta\n");
+    printf("input_type=LTR_STRUC\n");
 	printf("######################## Preprocessing ########################\n");
 	printf("preprocessing=true\n");
 	printf("database=/home/user/cores-database-wickercode.Lineage_Bianca.fa\n");
@@ -896,6 +896,7 @@ void printHelp(){
 	printf("Blast_evalue=1e-4\n");
 	printf("###### Insertion Time analysis and Phylogenetic tree creation ########\n");
 	printf("insertion=true\n");
+	printf("substitution_rate=0.000000013\n");
 	printf("#this tabfile isn't necessary if classification is true\n");
 	printf("tabfileS4=/home/user/Inpactor_output/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB\n");
 }
@@ -912,6 +913,7 @@ int main (int argc, char *argv[]){
 	char references[1000] = "";
 	char blast_evalue[1000] = "";
 	char input_type[1000] = "";
+	char substitution_rate[1000] = "";
 	int law808080 = 0;
 	int RTlen = 200;
 	int par_step1 = 0;
@@ -1011,7 +1013,7 @@ int main (int argc, char *argv[]){
 		    			printf("Result directory is: %s\n", result_directory);
 		    		}
 		    	}
-		    	if(strcmp(*(parameters), "directory") == 0){ // directory parameter 
+		    	if(strcmp(*(parameters), "input") == 0){ // directory parameter 
 		    		strcpy(directory, *(parameters+1));
 		    		if(directory[strlen(directory)-1] == '\n' ){
 						directory[strlen(directory)-1] = '\0';
@@ -1109,6 +1111,15 @@ int main (int argc, char *argv[]){
 		    		}
 	    			if(my_id == 0){	
 		    			printf("Insertion module was selected? %s",*(parameters+1));
+		    		}
+		    	}
+		    	if(strcmp(*(parameters), "substitution_rate") == 0){ // substitution rate 
+	    			strcpy(substitution_rate, *(parameters+1));
+		    		if(substitution_rate[strlen(substitution_rate)-1] == '\n' ){
+						substitution_rate[strlen(substitution_rate)-1] = '\0';
+					}
+		    		if(my_id == 0){
+		    			printf("substitution rate is: %s\n", substitution_rate);
 		    		}
 		    	}
 		    	if(strcmp(*(parameters), "tabfileS4") == 0){ // tabular file parameter 
@@ -1234,6 +1245,12 @@ int main (int argc, char *argv[]){
 			}
 			fclose(tabfile_file4);
 			}
+			if(strcmp(substitution_rate,"") == 0){
+				if(my_id == 0){
+					printf("ERROR: You must to indicate the substitution rate\n");
+				}
+				exit(0);
+			}
 		}
 
 		if(par_step4 == 1 && par_step3 == 0){
@@ -1298,7 +1315,13 @@ int main (int argc, char *argv[]){
 
 	    //call to step4
 	    if(par_step4 == 1){
-	    	step4(tab_fileS4,par_step2,par_step3,my_id,directory,result_directory,nproc,verbose,input_type);
+	    	if(strcmp(input_type,"repet") != 0){
+	    		step4(tab_fileS4,par_step2,par_step3,my_id,directory,result_directory,nproc,verbose,input_type,substitution_rate);
+	    	}else{
+	    		if(my_id == 0){
+					printf("I cannot run step 4 with repet input type!\n");
+				}
+	    	}
 	    }
 
 	    //call to cleaner

@@ -1,5 +1,5 @@
 ######################## configuration file ###########################
-directory=/home/user/input
+input=/home/user/input
 result_directory=/home/user/result_directory
 verbose=true
 clean=false
@@ -24,5 +24,6 @@ RTlength=200
 Blast_evalue=1e-4
 ############ Insertion Time analysis and Phylogenetic tree creation #########
 insertion=true
+substitution_rate=0.000000013
 # this tabfile isn't necessary if classification is true
 tabfileS4=/home/user/result_directory/step2/all_tabfiles.tab_ALL.RLC_RLG.TAB

@@ -709,6 +709,7 @@ then
         result_directory=$3
 		directory=$4
 	 	input=$5
+	 	substitution_rate=$6
      		if [ $input != "repet" ]; then
 		rm -f ${result_directory}/*.fatmp
 		FILE=${directory}/out_file.${id_proc}.tab_ALL.RLC_RLG.TAB
@@ -757,7 +758,7 @@ then
 						fi
 						DISPERSITE=`echo "scale=8; ${DIS} / 100" | bc | sed 's/\./0./' `
 						#average substitution rate of 6.5 × 10–9 mutations per synonymous site per year determined for coding regions 				#of adh1 and adh2 genes in grasses or 1.3 x 10-8 for LTR
-						AGE=$(echo "${DISPERSITE} / (0.000000013 * 2)" | bc )
+						AGE=$(echo "${DISPERSITE} / (${substitution_rate} * 2)" | bc )
 						echo "${NAMESEQ};${DISPERSITE};${AGE}" >> ${result_directory}/Final.insertion.${id_proc}-time.tab.tmp
 					fi
 				fi
@@ -813,7 +814,7 @@ then
          if [ -z ${result_directory}/${TAB}.NOC.TAB ];
 	then
 	    #To do alignment between Unclassified and classified LTR-RTs for applying 80-80-80 rule
-	    censor.ncbi ${result_directory}/clasifiedTE.fa -lib "${result_directory}/${TAB}.NOC.FA" -bprg blastn -map "${result_directory}/${TAB}.map" -nofound -nomasked -aln "${result_directory}/${TAB}.aln" -bprm '-a 1' > /dev/null 2>&1
+	    censor.ncbi ${result_directory}/classifiedTE.fa -lib "${result_directory}/${TAB}.NOC.FA" -bprg blastn -map "${result_directory}/${TAB}.map" -nofound -nomasked -aln "${result_directory}/${TAB}.aln" -bprm '-a 1' > /dev/null 2>&1
 	    FILE=${result_directory}/${TAB}.map
 	    sed 's/ /:/g' $FILE | sed 's/::/:/g' | sed 's/::/:/g' | sed 's/::/:/g' > $FILE.tab
 	    
