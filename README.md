@@ -70,13 +70,13 @@ Simón Orozco Arias
 
 Reinel Tabares Soto
 
-Bioinformatics and computational biology center of Colombia: (www.bios.co) 
+University of Caldas (http://ucaldas.edu.co/)
 
 Diego Hernando Ceballos López
 
 Andrea garavito
 
-For more information please write to: tecnologia@bios.co - contacto@bios.co
+For more information please write to: simon.orozco.arias@gmail.com
 
 # Citation:
 Orozco-Arias, S., Tabares-Soto, R., Ceballos, D., & Guyot, R. (2017, September). Parallel Programming in Biological Sciences, Taking Advantage of Supercomputing in Genomics. In Colombian Conference on Computing (pp. 627-643). Springer, Cham.
