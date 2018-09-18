@@ -27,7 +27,7 @@ Using the protein Fasta file from RT domain extraction module, a multiple alignm
 # Prerequisites: 
 Inpactor run over linux environments, the software was tested in Centos 6,7.  Following we show a list of the prerequisites of Inpactor installation:
 
-- NCBI-Blast version 2.5.0 (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.5.0/)
+- NCBI-Blast version 2.5.0 (included blastall command) (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.5.0/)
 - Emboss version 6.6.0 (ftp://emboss.open-bio.org/pub/EMBOSS/)
 - Wise2 version 2.4.0 (http://www.ebi.ac.uk/~birney/wise2/)
 - OpenMPI version 1.8.8 (https://www.open-mpi.org/software/ompi/v1.8/)
