@@ -1,14 +1,14 @@
 #!/bin/sh
 #########################################################################
 #       @(#) Functions for Inpactor                                     #
-#                   				                        #
+#                   				                			        #
 #       Simon Orozco Arias                                              #
 #       romain guyot                                                    #
 #########################################################################
 
 fun=$1
 
-if [ $fun == "step1" ];
+if [ $fun = "step1" ];
 then
 	#########################################################################
 	#       @(#) Step 1 - Preprocessing                                     #
@@ -96,7 +96,7 @@ then
 	exit 0
 fi
 
-if [ $fun == "step1_fasta" ];
+if [ $fun = "step1_fasta" ];
 then
 	file=$2
         DB=$3
@@ -115,7 +115,8 @@ then
 	    rm -f ${seq}.fa.tmp
 	  else
 	    num_eleme=`grep "Location :" ${result_directory}/${seq}.finder.tmp | wc -l`
-	    for ((i=1; i<=$num_eleme; i++))
+	    #for ((i=1; i<=$num_eleme; i++))
+	    for i in {i..$num_eleme..1}
 	    do
 	        leng=`grep "Location :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/ /|/g' | cut -d "|" -f2 | head -n $i | tail -1`
 	        simi=`grep "Score    :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/\]//g' | head -n $i | tail -1`
@@ -202,7 +203,7 @@ then
 	done
 fi
 
-if [ $fun == "step1_repet" ];
+if [ $fun = "step1_repet" ];
 then
 	file=$2
     DB=$3
@@ -277,7 +278,7 @@ then
  	done
 fi
 
-if [ $fun == "step2" ];
+if [ $fun = "step2" ];
 then
 	#########################################################################
 	#       @(#) Step2 - Classify LTR-RT elements into families             #
@@ -603,7 +604,7 @@ then
 	exit 0
 fi
 
-if [ $fun == "step3" ];
+if [ $fun = "step3" ];
 then
 	#########################################################################
 	#       @(#) Step 3 - Domain Extraction                                 #
@@ -664,7 +665,7 @@ then
 	exit 0
 fi
 
-if [ $fun == "step4" ];
+if [ $fun = "step4" ];
 then
 	###########################################################################
 	#       @(#) Step 4 -Insertion Tme analysis and Phylogenetic tree creation#
@@ -768,7 +769,7 @@ then
 	fi
 fi
 
-if [ $fun == "cleaner" ];
+if [ $fun = "cleaner" ];
 then
 	#########################################################################
 	#       @(#) Cleaner                                                    #
@@ -803,7 +804,7 @@ then
 	rm -f censor.ncbi.*.log  dbcm1.* mp.* qumx.* dbmx.*
 fi
 
-if [ $fun == "80-80-80-law" ];
+if [ $fun = "80-80-80-law" ];
 then
 	directory=$2
 	id_proc=$3
@@ -895,7 +896,7 @@ then
 	      #Extraction of FASTA  ${TAB}_RLC_RLG.TAB #
 	      ##########################################
 	      while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
-	          do
+	      do
 	          ######################
 	          # NAME               #
 	          ######################
@@ -925,7 +926,7 @@ then
 	      #Extraction of FASTA  ${TAB}.RXX.TAB     #
 	      ##########################################
 	      while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
-	          do
+	      do
 	          ######################
 	          # NAME               #
 	          ######################
@@ -955,7 +956,7 @@ then
 	      #Extraction of FASTA  ${TAB}.TR_GAG.TAB  #
 	      ##########################################
 	      while IFS=: read rl a b c d e f g h i j k l m n o p q r s t u v w x y z
-	          do
+	      do
 	          ######################
 	          # NAME               #
 	          ######################
@@ -985,7 +986,7 @@ then
 	      #Extraction of FASTA  ${TAB}.NOC.TAB#
 	      ##########################################
 	      while IFS=: read a b c d e f g h i j k l m n o p q r s t u v w x y z
-	          do
+	      do
 	          ######################
 	          # NAME               #
 	          ######################
