@@ -79,4 +79,4 @@ Andrea garavito
 For more information please write to: simon.orozco.arias@gmail.com
 
 # Citation:
-Orozco-Arias, S., Tabares-Soto, R., Ceballos, D., & Guyot, R. (2017, September). Parallel Programming in Biological Sciences, Taking Advantage of Supercomputing in Genomics. In Colombian Conference on Computing (pp. 627-643). Springer, Cham.
+Orozco-Arias, S.; Liu, J.; Tabares-Soto, R.; Ceballos, D.; Silva Domingues, D.; Garavito, A.; Ming, R.; Guyot, R. Inpactor, Integrated and Parallel Analyzer and Classifier of LTR Retrotransposons and Its Application for Pineapple LTR Retrotransposons Diversity and Dynamics. Biology 2018, 7, 32.
