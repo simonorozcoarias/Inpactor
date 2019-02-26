@@ -7,7 +7,8 @@ clean=false
 input_type=LTR_STRUC
 ############################# Preprocessing ###############################
 preprocessing=true
-database=cores-database-wickercode.Lineage_Bianca.fa
+# database with domains sequences
+database=cores-database-wickercode.fasta
 ############################# Classification ################################
 classification=true
 # this tabfile isn't necessary if preprocessing is true
