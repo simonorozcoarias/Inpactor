@@ -2,23 +2,24 @@
 input=/home/user/input
 result_directory=/home/user/result_directory
 verbose=true
-clean=false
+clean=true
 # this type can be LTR_STRUC, repet or fasta
 input_type=LTR_STRUC
 ############################# Preprocessing ###############################
 preprocessing=true
-# database with domains sequences
+# database with domain sequences
 database=cores-database-wickercode.fasta
 ############################# Classification ################################
 classification=true
 # this tabfile isn't necessary if preprocessing is true
 tabfile=/home/user/result_directory/step1/all_tabfiles.tab
+# for doing re classification
 80-80-80-rule=true
 ############################# Domain Extraction ##############################
 extraction=true
 # database of domains that you want to extract, we recommend to use Reverse transcriptase domain (RT)
 RTdatabase=RTcores-database-wickercode.fasta
-# if you have already classified LTR retrotransposons, you can used them for phylogenetic analysis
+# if you have already classified LTR retrotransposons, you can used them for phylogenetic analysis (optional)
 references=/home/user/result_directory/references.fasta
 # this fastafile isn't necessary if classification is true
 fastafile=/home/user/result_directory/step2/all_tabfiles.tab_ALL.RLC_RLG.FA
