@@ -3,7 +3,7 @@ input=/home/user/input
 result_directory=/home/user/result_directory
 verbose=true
 clean=false
-#this type can be LTR_STRUC, repet or fasta
+# this type can be LTR_STRUC, repet or fasta
 input_type=LTR_STRUC
 ############################# Preprocessing ###############################
 preprocessing=true
@@ -15,14 +15,13 @@ tabfile=/home/user/result_directory/step1/all_tabfiles.tab
 80-80-80-rule=true
 ############################# Domain Extraction ##############################
 extraction=true
-# database of domains that you want to extract, we recommend use Reverse transcriptase domain (RT)
+# database of domains that you want to extract, we recommend to use Reverse transcriptase domain (RT)
 RTdatabase=/home/user/result_directory/DB/RTcores-database-wickercode.Lineage_Bianca.fa
 # if you have already classified LTR retrotransposons, you can used them for phylogenetic analysis
-# You should use the same domain of your own LTR retrotransposons that you are extracting in this step
 references=/home/user/result_directory/references.fasta
 # this fastafile isn't necessary if classification is true
 fastafile=/home/user/result_directory/step2/all_tabfiles.tab_ALL.RLC_RLG.FA
-#filter RT size. For a lot of RT, is better RTlength > 200, for less RTlength > 180 or 150
+# filter RT size. For a lot of RT, is better RTlength > 200, for less RTlength > 180 or 150
 RTlength=200
 Blast_evalue=1e-4
 ############ Insertion Time analysis and Phylogenetic tree creation #########
