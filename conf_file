@@ -15,7 +15,10 @@ tabfile=/home/user/result_directory/step1/all_tabfiles.tab
 80-80-80-rule=true
 ############################# Domain Extraction ##############################
 extraction=true
+# database of domains that you want to extract, we recommend use Reverse transcriptase domain (RT)
 RTdatabase=/home/user/result_directory/DB/RTcores-database-wickercode.Lineage_Bianca.fa
+# if you have already classified LTR retrotransposons, you can used them for phylogenetic analysis
+# You should use the same domain of your own LTR retrotransposons that you are extracting in this step
 references=/home/user/result_directory/references.fasta
 # this fastafile isn't necessary if classification is true
 fastafile=/home/user/result_directory/step2/all_tabfiles.tab_ALL.RLC_RLG.FA
