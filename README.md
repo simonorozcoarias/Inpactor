@@ -53,6 +53,12 @@ Inpactor need a configuration file where is defined the parameters which will be
 
 This command execute the process of analysis. Is very important to consider that all software listed in the prerequisites section must be load in the path of the system. This step uses Inpactor’s executable file generated in installation section. Is highly recommended if you have less sequences or elements in your input than CPUs in your system, to use the same number of processes than sequences or elements in your input, but if you have more sequences or elements than CPUs, is better to use the same number of processes than CPUs in your system.
 
+Be sure of formating your database using makeblastdb command before to run Inpactor. If you want to use a custom database, you must format sequence names to have the following key words:
+
+>sequence_name#SuperfamilyKey+Lineage
+
+Where SuperfamilyKey must be RLC for Ty1-Copia or RLG for TY3-Gypsy. Also your sequence names must not to have # character. Lineage can be change for any classification system.
+
 mpirun -np “number of process (depend of the number of cores available in your system)” Inpactor “configuration file”
 
 # License:
