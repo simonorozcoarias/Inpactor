@@ -57,7 +57,7 @@ Be sure of formating your database using makeblastdb command before to run Inpac
 
 >sequence_name#SuperfamilyKey+Lineage
 
-Where SuperfamilyKey must be RLC for Ty1-Copia or RLG for TY3-Gypsy. Also your sequence names must not to have "#" or ":" characters. Lineage can be change for any classification system.
+Where SuperfamilyKey must be RLC for Ty1-Copia or RLG for TY3-Gypsy. Also sequence names in your files must not to have any special characters such as "#", " ", ";" "{", "}", parenthesis, ":" among others. Lineage can be change for any classification system.
 
 mpirun -np “number of process (depend of the number of cores available in your system)” Inpactor “configuration file”
 
