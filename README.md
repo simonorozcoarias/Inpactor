@@ -31,7 +31,7 @@ Inpactor run over linux environments, the software was tested in Centos 6,7.  Fo
 - Emboss version 6.6.0 (ftp://emboss.open-bio.org/pub/EMBOSS/)
 - Wise2 version 2.4.0 (http://www.ebi.ac.uk/~birney/wise2/)
 - OpenMPI version 1.8.8 (https://www.open-mpi.org/software/ompi/v1.8/)
-- Censor version 4.2.29 (http://www.girinst.org/downloads/software/censor/) **Only used for re-classification (80-80-80 option in configure file)
+- Censor version 4.2.29 (http://www.girinst.org/downloads/software/censor/) **Only used for re-classification (80-80-80-rule option in configure file)
 - Mafft version 7.305 (http://mafft.cbrc.jp/alignment/software/)
 - LTR-FINDER version 1.0.5 (https://github.com/xzhub/LTR_Finder)
 
@@ -60,6 +60,8 @@ Be sure of formating your database using makeblastdb command before to run Inpac
 Where SuperfamilyKey must be RLC for Ty1-Copia or RLG for TY3-Gypsy. Also sequence names in your files must not to have any special characters such as "#", " ", ";" "{", "}", parenthesis, ":" among others. Lineage can be change for any classification system.
 
 mpirun -np “number of process (depend of the number of cores available in your system)” Inpactor “configuration file”
+
+**NOTE: If you cannot get the censor (because it is now private) you only need to set the 80-80-80-rule option in the configuration file to false.
 
 # License:
 Inpactor is licensed under GNU GLP v3
