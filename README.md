@@ -31,7 +31,7 @@ Inpactor run over linux environments, the software was tested in Centos 6,7.  Fo
 - Emboss version 6.6.0 (ftp://emboss.open-bio.org/pub/EMBOSS/)
 - Wise2 version 2.4.0 (http://www.ebi.ac.uk/~birney/wise2/)
 - OpenMPI version 1.8.8 (https://www.open-mpi.org/software/ompi/v1.8/)
-- Censor version 4.2.29 (http://www.girinst.org/downloads/software/censor/)
+- Censor version 4.2.29 (http://www.girinst.org/downloads/software/censor/) **Only used for re-classification (80-80-80 option in configure file)
 - Mafft version 7.305 (http://mafft.cbrc.jp/alignment/software/)
 - LTR-FINDER version 1.0.5 (https://github.com/xzhub/LTR_Finder)
 
