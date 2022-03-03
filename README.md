@@ -24,7 +24,7 @@ The insertion times of full-length copies, as defined by a minimum of 80% of nuc
 Phylogenetic tree creation.
 Using the protein Fasta file from RT domain extraction module, a multiple alignment was performed using Mafft with –thread option to indicate the number of cores.
 
-# Prerequisites: 
+# pre-requisites: 
 Inpactor run over linux environments, the software was tested in Centos 6,7.  Following we show a list of the prerequisites of Inpactor installation:
 
 - NCBI-Blast version 2.5.0 (included blastall command) (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.5.0/)
@@ -36,14 +36,57 @@ Inpactor run over linux environments, the software was tested in Centos 6,7.  Fo
 - LTR-FINDER version 1.0.5 (https://github.com/xzhub/LTR_Finder)
 
 # Installation:
-After install all prerequistes, you must clone the repository of the current version of Inpactor using: 
+To install almost all the pre-requisites is it recommended to use a conda environment. First clone the repo:
+```
+git clone https://github.com/simonorozcoarias/Inpactor.git
+```
+then, install the environment:
+```
+conda env create -f Inpactor1.yml
+```
+the command above will install the following pre-requesities for you: NCBI-Blast, Emboss, Wise2, Mafft, and LTR-FINDER. You need to install the OpenMPI software as following:
+```
+conda activate Inpactor1
+wget https://download.open-mpi.org/release/open-mpi/v1.8/openmpi-1.8.8.tar.gz
+tar xvf openmpi-1.8.8.tar.gz
+cd openmpi-1.8.8
+mkdir build
+./configure --prefix=/path/to/openmpi_downloaded_folder/build
+make
+make install
+```
+Remeber to change the --prefix path with your own path. For example: /home/user/Downloads/openmpi-1.8.8/build. Remember also to include the "build" folder in the path.
 
-$ git clone https://github.com/simonorozcoarias/Inpactor.git, then you might run as following:
+Then, you need to add the binaries and libraries to your environment variables:
+```
+export PATH=$PATH:/path/to/openmpi_downloaded_folder/build/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/openmpi_downloaded_folder/build/lib
+```
+**Remember please to change "/path/to/openmpi_downloaded_folder/" with your own path.**
 
-$ cd Inpactor
+Now, install Censor software (for the optional step of 80-80-80 re-classification):
+```
+wget https://www.girinst.org/downloads/software/censor/protected/censor-4.2.22.tar.gz
+tar xvf censor-4.2.22.tar.gz
+cd censor-4.2.22
+mkdir build
+./configure --prefix=/path/to/censor_downloaded_folder/build
+make
+make install
+```
+Remeber to change the --prefix path with your own path. For example: /home/user/Downloads/censor-4.2.22/build. Remember also to include the "build" folder in the path.
 
-$ mpicc Inpactor.c -o Inpactor
+Then, you need to add the binaries and libraries to your environment variables:
+```
+export PATH=$PATH:/path/to/censor_downloaded_folder/build/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/censor_downloaded_folder/build/lib
+```
+**Remember please to change "/path/to/censor_downloaded_folder/" with your own path.**
 
+After install all pre-requisites, you must compile Inpactor using: 
+```
+mpicc Inpactor.c -o Inpactor
+```
 This step produces an executable, which will be used in next sections. 
 
 Setting up the process of analysis:
@@ -53,13 +96,20 @@ Inpactor need a configuration file where is defined the parameters which will be
 
 This command execute the process of analysis. Is very important to consider that all software listed in the prerequisites section must be load in the path of the system. This step uses Inpactor’s executable file generated in installation section. Is highly recommended if you have less sequences or elements in your input than CPUs in your system, to use the same number of processes than sequences or elements in your input, but if you have more sequences or elements than CPUs, is better to use the same number of processes than CPUs in your system.
 
-Be sure of formating your database using makeblastdb command before to run Inpactor. If you want to use a custom database, you must format sequence names to have the following key words:
+**Be sure of formating your database using makeblastdb command before to run Inpactor.**
+
+If you want to use a custom database, you must format sequence names to have the following key words:
 
 >sequence_name#SuperfamilyKey+Lineage
 
 Where SuperfamilyKey must be RLC for Ty1-Copia or RLG for TY3-Gypsy. Also sequence names in your files must not to have any special characters such as "#", " ", ";" "{", "}", parenthesis, ":" among others. Lineage can be change for any classification system.
 
+**Please remember to activate the conda environment if you are using it (with the command: conda activate Inpactor1).
+
+Then, you can execute Inpactor as following:
+```
 mpirun -np “number of process (depend of the number of cores available in your system)” Inpactor “configuration file”
+```
 
 **NOTE: If you cannot get the censor (because it is now private) you only need to set the 80-80-80-rule option in the configuration file to false.
 
