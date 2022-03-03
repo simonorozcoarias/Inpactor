@@ -104,14 +104,14 @@ If you want to use a custom database, you must format sequence names to have the
 
 Where SuperfamilyKey must be RLC for Ty1-Copia or RLG for TY3-Gypsy. Also sequence names in your files must not to have any special characters such as "#", " ", ";" "{", "}", parenthesis, ":" among others. Lineage can be change for any classification system.
 
-**Please remember to activate the conda environment if you are using it (with the command: conda activate Inpactor1).
+**Please remember to activate the conda environment if you are using it (with the command: conda activate Inpactor1).**
 
 Then, you can execute Inpactor as following:
 ```
 mpirun -np “number of process (depend of the number of cores available in your system)” Inpactor “configuration file”
 ```
 
-**NOTE: If you cannot get the censor (because it is now private) you only need to set the 80-80-80-rule option in the configuration file to false.
+**NOTE: If you cannot get the censor (because it is now private) you only need to set the 80-80-80-rule option in the configuration file to false.**
 
 # License:
 Inpactor is licensed under GNU GLP v3
