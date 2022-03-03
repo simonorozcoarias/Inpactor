@@ -24,7 +24,7 @@ The insertion times of full-length copies, as defined by a minimum of 80% of nuc
 Phylogenetic tree creation.
 Using the protein Fasta file from RT domain extraction module, a multiple alignment was performed using Mafft with –thread option to indicate the number of cores.
 
-# pre-requisites: 
+# Pre-requisites: 
 Inpactor run over linux environments, the software was tested in Centos 6,7.  Following we show a list of the prerequisites of Inpactor installation:
 
 - NCBI-Blast version 2.5.0 (included blastall command) (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.5.0/)
@@ -44,7 +44,7 @@ then, install the environment:
 ```
 conda env create -f Inpactor1.yml
 ```
-the command above will install the following pre-requesities for you: NCBI-Blast, Emboss, Wise2, Mafft, and LTR-FINDER. You need to install the OpenMPI software as following:
+the command above will install the following pre-requesities for you: NCBI-Blast, Emboss, Wise2, Mafft, and LTR-FINDER. You need to install manually the OpenMPI software as following:
 ```
 conda activate Inpactor1
 wget https://download.open-mpi.org/release/open-mpi/v1.8/openmpi-1.8.8.tar.gz
