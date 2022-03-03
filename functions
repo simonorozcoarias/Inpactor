@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #########################################################################
 #       @(#) Functions for Inpactor                                     #
 #                   				                			        #
@@ -115,8 +115,8 @@ then
 	    rm -f ${seq}.fa.tmp
 	  else
 	    num_eleme=`grep "Location :" ${result_directory}/${seq}.finder.tmp | wc -l`
-	    #for ((i=1; i<=$num_eleme; i++))
-	    for i in {i..$num_eleme..1}
+	    for (( i=1; i<=${num_eleme}; i++ ))
+	    #for i in {i..$num_eleme..1}
 	    do
 	        leng=`grep "Location :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/ /|/g' | cut -d "|" -f2 | head -n $i | tail -1`
 	        simi=`grep "Score    :" ${result_directory}/${seq}.finder.tmp | cut -d ":" -f 3 | sed 's/\]//g' | head -n $i | tail -1`

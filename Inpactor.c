@@ -118,10 +118,10 @@ void step1(char dir[], int num_proc, int my_id, char db[], char result_directory
 		}
 	    
 	    //to split sequences in process files.
-	    char commandSplit[1000] = "sh Parallel_splitter ";
+	    char commandSplit[1000] = "bash Parallel_splitter ";
 	    char *cur = commandSplit;
 	    char * const end = commandSplit + sizeof commandSplit;
-	    cur += snprintf(cur, end-cur, "%s ","sh Parallel_splitter");
+	    cur += snprintf(cur, end-cur, "%s ","bash Parallel_splitter");
 	    cur += snprintf(cur, end-cur, "%s %i %s/step1 1",dir,num_proc-1,result_directory);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandSplit);
@@ -176,10 +176,10 @@ void step1(char dir[], int num_proc, int my_id, char db[], char result_directory
 	}else{ //slave procs
 		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		//executing step1
-		char commandStep1[1000] = "sh functions ";
+		char commandStep1[1000] = "bash functions ";
 	    char *cur2 = commandStep1;
 	    char * const end = commandStep1 + sizeof commandStep1;
-	    cur2 += snprintf(cur2, end-cur2, "%s ","sh functions");
+	    cur2 += snprintf(cur2, end-cur2, "%s ","bash functions");
 	    cur2 += snprintf(cur2, end-cur2, "step1 %s %s %d %s/step1",dir,db,my_id,result_directory);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandStep1);
@@ -230,10 +230,10 @@ void step1_fasta(char fastafile[], int num_proc, int my_id, char db[], char resu
 	    }
 
 	    //to split sequences in process files.
-	    char commandSplit[1000] = "sh Parallel_splitter ";
+	    char commandSplit[1000] = "bash Parallel_splitter ";
 	    char *cur = commandSplit;
 	    char * const end = commandSplit + sizeof commandSplit;
-	    cur += snprintf(cur, end-cur, "%s ","sh Parallel_splitter");
+	    cur += snprintf(cur, end-cur, "%s ","bash Parallel_splitter");
 	    cur += snprintf(cur, end-cur, " %s/step1 %s %i 5",result_directory,fastafile,num_proc-1);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandSplit);
@@ -288,10 +288,10 @@ void step1_fasta(char fastafile[], int num_proc, int my_id, char db[], char resu
 	}else{ //slave procs
 		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		//executing step1
-		char commandStep1[1000] = "sh functions ";
+		char commandStep1[1000] = "bash functions ";
 	    char *cur2 = commandStep1;
 	    char * const end = commandStep1 + sizeof commandStep1;
-	    cur2 += snprintf(cur2, end-cur2, "%s ","sh functions");
+	    cur2 += snprintf(cur2, end-cur2, "%s ","bash functions");
 	    cur2 += snprintf(cur2, end-cur2, "step1_fasta %s %s %d %s/step1",fastafile,db,my_id,result_directory);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandStep1);
@@ -342,10 +342,10 @@ void step1_repet(char fastafile[], int num_proc, int my_id, char db[], char resu
 	    }
 
 	    //to split sequences in process files.
-	    char commandSplit[1000] = "sh Parallel_splitter ";
+	    char commandSplit[1000] = "bash Parallel_splitter ";
 	    char *cur = commandSplit;
 	    char * const end = commandSplit + sizeof commandSplit;
-	    cur += snprintf(cur, end-cur, "%s ","sh Parallel_splitter");
+	    cur += snprintf(cur, end-cur, "%s ","bash Parallel_splitter");
 	    cur += snprintf(cur, end-cur, " %s/step1 %s %i 5",result_directory,fastafile,num_proc-1);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandSplit);
@@ -400,10 +400,10 @@ void step1_repet(char fastafile[], int num_proc, int my_id, char db[], char resu
 	}else{ //slave procs
 		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		//executing step1
-		char commandStep1[1000] = "sh functions ";
+		char commandStep1[1000] = "bash functions ";
 	    char *cur2 = commandStep1;
 	    char * const end = commandStep1 + sizeof commandStep1;
-	    cur2 += snprintf(cur2, end-cur2, "%s ","sh functions");
+	    cur2 += snprintf(cur2, end-cur2, "%s ","bash functions");
 	    cur2 += snprintf(cur2, end-cur2, "step1_repet %s %s %d %s/step1",fastafile,db,my_id,result_directory);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandStep1);
@@ -453,10 +453,10 @@ void step2(char dir[], int num_proc, int vstep1, int my_id, char tabfile[], char
 		if(vstep1 == 0){ //we have to split tabfile in chunks
 
 			//call splitter
-			char commandSplit[1000] = "sh Parallel_splitter ";
+			char commandSplit[1000] = "bash Parallel_splitter ";
 		    char *cur = commandSplit;
 		    char * const end2 = commandSplit + sizeof commandSplit;
-		    cur += snprintf(cur, end2-cur, "%s ","sh Parallel_splitter");
+		    cur += snprintf(cur, end2-cur, "%s ","bash Parallel_splitter");
 		    cur += snprintf(cur, end2-cur, "%s/step1 %s %d 2",result_directory,tabfile,num_proc-1);
 		    if(verbose == 1){
 		    	printf("executing command: %s\n",commandSplit);
@@ -543,10 +543,10 @@ void step2(char dir[], int num_proc, int vstep1, int my_id, char tabfile[], char
 	}else{//processes
 		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		//executing step2
-		char commandStep2[1000] = "sh functions ";
+		char commandStep2[1000] = "bash functions ";
 	    char *cur2 = commandStep2;
 	    char * const end = commandStep2 + sizeof commandStep2;
-	    cur2 += snprintf(cur2, end-cur2, "%s ","sh functions ");
+	    cur2 += snprintf(cur2, end-cur2, "%s ","bash functions ");
 	    cur2 += snprintf(cur2, end-cur2, "step2 %s/step1 %d %s/step2",result_directory,my_id,result_directory);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandStep2);
@@ -564,10 +564,10 @@ void step2(char dir[], int num_proc, int vstep1, int my_id, char tabfile[], char
 	    MPI_Send(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 	    if(law808080 == 1){
 	    	MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-	    	char commandStep21[1000] = "sh functions ";
+	    	char commandStep21[1000] = "bash functions ";
 		    char *cur21 = commandStep21;
 		    char * const end21 = commandStep21 + sizeof commandStep21;
-		    cur21 += snprintf(cur21, end-cur21, "%s ","sh functions ");
+		    cur21 += snprintf(cur21, end-cur21, "%s ","bash functions ");
 		    cur21 += snprintf(cur21, end-cur21, "80-80-80-law %s/step1 %d %s/step2",result_directory,my_id,result_directory);
 		    if(verbose == 1){
 		    	printf("executing command: %s\n",commandStep21);
@@ -630,10 +630,10 @@ void step3(char db[], char dir[], int num_proc, int vstep2, int my_id, char fast
            	}
 		}
 		//call splitter
-		char commandSplit[1000] = "sh Parallel_splitter ";
+		char commandSplit[1000] = "bash Parallel_splitter ";
 	    char *cur = commandSplit;
 	    char * const end2 = commandSplit + sizeof commandSplit;
-	    cur += snprintf(cur, end2-cur, "%s ","sh Parallel_splitter ");
+	    cur += snprintf(cur, end2-cur, "%s ","bash Parallel_splitter ");
 	    cur += snprintf(cur, end2-cur, "%s/step2 %s %d 3 '%s'",result_directory,filefasta,num_proc-1,references);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandSplit);
@@ -686,10 +686,10 @@ void step3(char db[], char dir[], int num_proc, int vstep2, int my_id, char fast
 	}else{//processes
 		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		//executing step3
-		char commandStep3[1000] = "sh functions ";
+		char commandStep3[1000] = "bash functions ";
 	    char *cur2 = commandStep3;
 	    char * const end = commandStep3 + sizeof commandStep3;
-	    cur2 += snprintf(cur2, end-cur2, "%s ","sh functions ");
+	    cur2 += snprintf(cur2, end-cur2, "%s ","bash functions ");
 	    cur2 += snprintf(cur2, end-cur2, "step3 %s %d %s/step3 %s/step2 %d %s",db,my_id,result_directory,result_directory,RTlen,blast_e);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandStep3);
@@ -759,10 +759,10 @@ void step4(char tabfile[], int vstep2, int vstep3, int my_id, char dir[],char re
 	        	printf("tabfile for step 4 is: %s\n",tabfile_s4);
 	    }
 		//call splitter
-		char commandSplit[1000] = "sh Parallel_splitter ";
+		char commandSplit[1000] = "bash Parallel_splitter ";
 	    char *cur = commandSplit;
 	    char * const end2 = commandSplit + sizeof commandSplit;
-	    cur += snprintf(cur, end2-cur, "%s ","sh Parallel_splitter");
+	    cur += snprintf(cur, end2-cur, "%s ","bash Parallel_splitter");
 	    cur += snprintf(cur, end2-cur, "%s/step2 %s %i 4",result_directory,tabfile_s4,num_proc-1);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandSplit);
@@ -792,10 +792,10 @@ void step4(char tabfile[], int vstep2, int vstep3, int my_id, char dir[],char re
 	    	}
 	    }
 	    //join all partial results in only one
-	    char commandJoin[1000] = "sh functions ";
+	    char commandJoin[1000] = "bash functions ";
 	    char *cur2 = commandJoin;
 	    char * const end3 = commandJoin + sizeof commandJoin;
-	    cur2 += snprintf(cur2, end3-cur2, "%s ","sh functions ");
+	    cur2 += snprintf(cur2, end3-cur2, "%s ","bash functions ");
 	    cur2 += snprintf(cur2, end3-cur2,  "step4 %d %s/step4 %s %d",my_id,result_directory,genomeS4,num_proc);
 	    if(verbose == 1){
 	    	printf("executing command: %s\n",commandJoin);
@@ -817,10 +817,10 @@ void step4(char tabfile[], int vstep2, int vstep3, int my_id, char dir[],char re
 	}else{//processes
 		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		//executing step4
-		char commandStep4[1000] = "sh functions ";
+		char commandStep4[1000] = "bash functions ";
 		char *cur2 = commandStep4;
 		char * const end = commandStep4 + sizeof commandStep4;
-		cur2 += snprintf(cur2, end-cur2, "%s ","sh functions ");
+		cur2 += snprintf(cur2, end-cur2, "%s ","bash functions ");
 		cur2 += snprintf(cur2, end-cur2, "step4 %d %s/step4 %s/step2 %s %s",my_id,result_directory,result_directory,input,substitution_rate);
 		if(verbose == 1){
 		  printf("executing command: %s\n",commandStep4);
@@ -844,10 +844,10 @@ void step4(char tabfile[], int vstep2, int vstep3, int my_id, char dir[],char re
 void cleaner(char result_directory[], int verbose){
 	char buf[BUFSIZE];
 	FILE *fp;
-	char commandMK[1000] = "sh functions ";
+	char commandMK[1000] = "bash functions ";
     char *cur1 = commandMK;
     char * const end = commandMK + sizeof commandMK;
-    cur1 += snprintf(cur1, end-cur1, "%s ","sh functions");
+    cur1 += snprintf(cur1, end-cur1, "%s ","bash functions");
     cur1 += snprintf(cur1, end-cur1, "cleaner %s",result_directory);
     if(verbose == 1){
     	printf("executing cleaner: %s\n",commandMK);
